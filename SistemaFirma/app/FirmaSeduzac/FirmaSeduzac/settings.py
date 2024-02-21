@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as mensajes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'UTC'
 
@@ -121,3 +122,21 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración para media y estaticos
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+STATICS_DIRS = (BASE_DIR / 'static')
+
+#CRISPY para forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Tags para mensajes de exito, error etc.
+MESSAGE_TAGS = {
+    mensajes.DEBUG: 'debug',
+    mensajes.INFO: 'info',
+    mensajes.SUCCESS: 'succes',
+    mensajes.WARNING: 'warning',
+    mensajes.ERROR: 'danger',
+}
+
