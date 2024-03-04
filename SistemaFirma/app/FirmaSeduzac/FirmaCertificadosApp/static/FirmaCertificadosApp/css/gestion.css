@@ -1,6 +1,6 @@
 body {
   font-family: 'Lora';
-  background: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url("../img/bg_main2.jpg");
+  background: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url("");
   background-attachment: fixed;
   background-position: center;
   background-size: cover;
@@ -277,93 +277,6 @@ ul.errorlist{
   color: red;
 }
 
-#btn-inicio:hover{
-  background-color: rgb(151, 132, 102);
-}
-
-.contenedorFormulario {
-  margin: 20px auto;
-  padding: 20px;
-  max-width:fit-content;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 0 10px #ccc;
-}
-
-.formularioTabla {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-  display: inline-block;
-}
-
-.formularioTabla td, .formularioTabla th {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  font-size: 16px;
-  color: #333;
-}
-
-.formularioTabla th {
-  background-color: #f0f0f0;
-}
-
-.formularioBoton {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.formularioBoton input[type=submit] {
-  width: 150px;
-  padding: 8px 16px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-  background-color: rgba(81, 52, 45);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color .3s;
-}
-
-.formularioBoton input[type=submit]:hover {
-  background-color: rgb(66, 43, 37);
-}
-
-.pdfBoton {
-  width: 150px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-  background-color: rgba(81, 52, 45);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color .3s;
-  text-decoration: none;
-}
-
-.pdfBoton:hover{
-  background-color: rgb(66, 43, 37);
-  text-decoration: none;
-  color: #fff;
-}
-
-.campo-num {
-  max-width: 75px;
-}
-
-.campo-num-big{
-  max-width: 95px;
-}
-
-.campo-num-bigbig{
-  max-width: 110px;
-}
-
 .form-header {
   display: flex;
   flex-direction: column;
@@ -396,73 +309,44 @@ ul.errorlist{
   text-align: right;
 }
 
-.tablaRegistros {
-  width: auto;
-  border-collapse: collapse;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: auto;
-  margin-right: auto;
+
+
+.container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 500px; /* Ajusta el ancho del contenedor según sea necesario */
+  margin: auto; /* Centra el contenedor horizontalmente */
+  margin-top: 100px;
 }
 
-.tablaRegistros th,
-.tablaRegistros td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  font-size: 16px;
-  color: #333;
+.form-group {
+    margin-bottom: 20px;
 }
 
-.tablaRegistros th {
-  background-color: #f0f0f0;
+.form-group label {
+    display: block;
+    text-align: left;
 }
 
-.eliminar-button {
-  background-color: #850808;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
 
-.eliminar-button:hover {
-  background-color: #cc0000;
+.btn {
+    margin-top: 10px;
 }
 
-.editar-button {
-  background-color: #56070c;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 90px;
+.alert {
+    display: block;
+    margin-top: 10px;
 }
 
-.editar-button:hover {
-  background-color: #350a06;
-}
-
-/* Estilos para mensajes de éxito */
-.alert-success {
-  background-color: #dff0d8;
-  border-color: #d0e9c6;
-  color: #3c763d;
-}
-
-/* Deshabilitar formatos */
-.not-active { 
-  pointer-events: none; 
-  cursor: default;
-  background-color: #A5A5A5;
-  border: #A5A5A5;
-}
 
 
 
