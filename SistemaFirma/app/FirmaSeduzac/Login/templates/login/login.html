@@ -1,15 +1,26 @@
-{% extends "base.html" %}
 
 {% load static %}
+<head>
+    <!-- Bootstrap -->
+    <link href="{% static 'FirmaCertificadosApp/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
-{% block title %}
+     <!-- Fonts -->
+    
+     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+     
+
+    <!-- Styles -->
+    <link href="{% static 'FirmaCertificadosApp/css/gestion.css' %}" rel="stylesheet">
+</head>
+<title>
     Acceder
-{% endblock title %}
-
+</title>
 {% block content %}
+{% if not user.is_authenticated %}
 <body style="background-color:darkgrey;">
     <div class="container">
-        <h4>Firma Certificados - Prepas Estatales</h4>
+        <h1>Firma Certificados  Prepas Estatales</h1>
         <hr>
 
         <form method="post">
@@ -35,6 +46,17 @@
             {% endif %}
         </form>
     </div>
+    {% else %}
+    <div class="alert alert-warning" style="text-align: center; width: 50%; margin: 0 auto;">
+
+        <p><b>Usuario autenticado</p></b>
+        <a href="{% url 'Inicio' %}">Ir a Inicio</a>
+    
+    </div>
+{% endif %}
+    <!-- Bootstrap -->
+    <script src="{% static 'FirmaCertificadosApp/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'FirmaCertificadosApp/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
 {% endblock content %}
