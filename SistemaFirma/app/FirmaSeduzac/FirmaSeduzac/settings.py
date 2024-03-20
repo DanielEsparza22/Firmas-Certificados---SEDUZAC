@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'FirmaCertificadosApp',
     'Login',
     'CertificacionesCompletasApp',
+    'CertificacionesParcialesApp',
+    'BachilleratoDistanciaApp',
+    'PorEscuelaApp',
 ]
 
 MIDDLEWARE = [

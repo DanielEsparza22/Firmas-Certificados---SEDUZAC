@@ -22,4 +22,7 @@ urlpatterns = [
     path('inicio/', include('FirmaCertificadosApp.urls')),
     path('', include('Login.urls')),
     path('certificados_completos/', include('CertificacionesCompletasApp.urls')),
+    path('certificados_parciales/', include('CertificacionesParcialesApp.urls')),
+    path('bachillerato_distancia/', include('BachilleratoDistanciaApp.urls')),
+    path('por_escuela/', include('PorEscuelaApp.urls')),
 ]

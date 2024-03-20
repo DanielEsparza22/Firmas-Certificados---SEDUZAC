@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Por Escuela
+{% endblock title %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<body>
+
+<div style="margin-top: 15px; margin-left: 150px;" id="div_content">
+    <h2>Contenido Por Escuela</h2>
+</div>
+
+{% else %}
+
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var offcanvasElement = document.getElementById('offcanvasScrolling');
+      var div_content = document.getElementById('div_content');
+  
+      offcanvasElement.addEventListener('shown.bs.offcanvas', function () {
+        var offset = 400;
+        div_content.style.marginLeft = offset + 'px';
+      });
+  
+      offcanvasElement.addEventListener('hidden.bs.offcanvas', function () {
+        div_content.style.marginLeft = '150px';
+      });
+    });
+  </script>
+</body>
+</html>
+{% endblock %}
