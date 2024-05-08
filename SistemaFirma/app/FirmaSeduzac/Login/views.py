@@ -1,30 +1,18 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth import login, logout, authenticate
-from django.contrib import messages
-# from .forms import CustomPasswordChangeForm
+from django.shortcuts import render
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from .forms import LoginForm
+from django.views.generic.edit import CreateView
+from django.contrib.auth.models import User
+from .forms import UserForm
+from django.contrib.messages.views import SuccessMessageMixin
 
-# Create your views here.
-def cerrar_sesion(request):
-    logout(request)
+class LoginView(LoginView):
+    template_name = 'login/login.html'
+    form_class = LoginForm
 
-    return redirect('Login')
-
-def logear(request):
-   if(request.method == "POST"):
-      form = AuthenticationForm(request,data = request.POST)
-      if(form.is_valid()):
-         nombre_usuario = form.cleaned_data.get("username")
-         password_usuario = form.cleaned_data.get("password")
-
-         usuario = authenticate(username = nombre_usuario, password = password_usuario)
-         if(usuario is not None):
-            login(request, usuario)
-            return redirect('Inicio')
-         else:
-            messages.error(request,"Usuario no valido")
-      else:
-         messages.error(request,"Información incorrecta")
-
-   form = AuthenticationForm()
-   return render(request,"login/login.html",{"form":form})
+class RegisterView(SuccessMessageMixin, CreateView):
+    model = User
+    form_class = UserForm
+    success_url = reverse_lazy('login')
+    success_message = "%(username)s se registró de manera exitosa"

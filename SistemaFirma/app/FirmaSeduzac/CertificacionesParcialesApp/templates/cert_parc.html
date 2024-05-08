@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block title %}
     Certificaciones Parciales
@@ -6,32 +6,19 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
 <body>
 
-<div style="margin-top: 15px; margin-left: 150px;" id="div_content">
-    <h2>Contenido para Certificaciones Parciales</h2>
-</div>
+    <h2>Certificaciones Parciales</h2>
 
-{% else %}
-
-{% endif %}
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var offcanvasElement = document.getElementById('offcanvasScrolling');
-      var div_content = document.getElementById('div_content');
-  
-      offcanvasElement.addEventListener('shown.bs.offcanvas', function () {
-        var offset = 400;
-        div_content.style.marginLeft = offset + 'px';
-      });
-  
-      offcanvasElement.addEventListener('hidden.bs.offcanvas', function () {
-        div_content.style.marginLeft = '150px';
-      });
-    });
-  </script>
+    <form method="post" style="width: 100%;">
+        {% csrf_token %}
+        <div style="display: flex; align-items: center;">
+            <div>
+                <label for="id_curp">CURP del Alumno:</label>
+                {{ form.curp }}
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-left: 10px; margin-top: 30px">Enviar</button>
+        </form>    
 </body>
 </html>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block title %}
     Certificaciones Completas
@@ -6,32 +6,9 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
 <body>
 
-<div style="margin-top: 15px; margin-left: 150px;" id="div_content">
-    <h2>Contenido para Certificaciones Completas</h2>
-</div>
-
-{% else %}
-
-{% endif %}
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var offcanvasElement = document.getElementById('offcanvasScrolling');
-      var div_content = document.getElementById('div_content');
-  
-      offcanvasElement.addEventListener('shown.bs.offcanvas', function () {
-        var offset = 400;
-        div_content.style.marginLeft = offset + 'px';
-      });
-  
-      offcanvasElement.addEventListener('hidden.bs.offcanvas', function () {
-        div_content.style.marginLeft = '150px';
-      });
-    });
-  </script>
+<h2>Contenido para Certificaciones Completas</h2>
 </body>
 </html>
 {% endblock %}

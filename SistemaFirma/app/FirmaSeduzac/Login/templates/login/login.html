@@ -1,62 +1,86 @@
-
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <!-- Bootstrap -->
-    <link href="{% static 'FirmaCertificadosApp/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login</title>
 
-     <!-- Fonts -->
-    
-     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
-     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
-     
-
-    <!-- Styles -->
-    <link href="{% static 'FirmaCertificadosApp/css/gestion.css' %}" rel="stylesheet">
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'css/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
 </head>
-<title>
-    Acceder
-</title>
-{% block content %}
-{% if not user.is_authenticated %}
-<body style="background-color:darkgrey;">
-    <div class="container">
-        <h1>Firma Certificados  Prepas Estatales</h1>
-        <hr>
-
-        <form method="post">
-            {% csrf_token %}
-
-            <div class="form-group">
-                {{ form.username.label_tag}}
-                {{ form.username }}
-            </div>
-
-            <div class="form-group">
-                {{ form.password.label_tag}}
-                {{ form.password }}
-            </div>
-
-            <button type="submit" class="btn btn-success btn-lg btn-block">Ingresar</button>
-            {% comment %} <button type="reset" class="btn btn-info btn-lg btn-block">Limpiar</button> {% endcomment %}
-
-            {% if messages %}
-                {% for mensaje in messages %}
-                    <span class="alert alert-{{ mensaje.tags }}">{{ mensaje }}</span>
-                {% endfor %}
-            {% endif %}
-        </form>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <!-- /.login-logo -->
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <a href="" class="h1"><b>Firma de Certificados</b></a>
     </div>
-    {% else %}
-    <div class="alert alert-warning" style="text-align: center; width: 50%; margin: 0 auto;">
+    <div class="card-body">
+      <p class="login-box-msg">Inicie sesión para acceder al sistema</p>
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <div class="alert alert-success">
+              <span{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </ul>
+      {% endif %}
 
-        <p><b>Usuario autenticado</p></b>
-        <a href="{% url 'Inicio' %}">Ir a Inicio</a>
-    
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        Datos incorrectos.
+      </div>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Nombre de Usuario" name="username">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Contraseña" name="password">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+            <input type="hidden" name="next" value={{next}}></input>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+      <p class="mb-0">
+        {% comment %} <a href="{% url 'register' %}" class="text-center">Registrar un nuevo usuario</a> {% endcomment %}
+      </p>
     </div>
-{% endif %}
-    <!-- Bootstrap -->
-    <script src="{% static 'FirmaCertificadosApp/vendor/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'FirmaCertificadosApp/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- /.card-body -->
+  </div>
+  <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
 </body>
 </html>
-{% endblock content %}

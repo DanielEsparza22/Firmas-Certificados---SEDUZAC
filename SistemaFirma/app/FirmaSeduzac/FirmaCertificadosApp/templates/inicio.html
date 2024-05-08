@@ -1,37 +1,12 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block title %}
     Inicio
 {% endblock title %}
 
 {% block content %}
-
-{% if user.is_authenticated %}
 <body>
-
-<div style="margin-top: 15px; margin-left: 150px;" id="div_content">
-    Contenido de cada seccion
-</div>
-
-{% else %}
-
-{% endif %}
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var offcanvasElement = document.getElementById('offcanvasScrolling');
-      var div_content = document.getElementById('div_content');
-  
-      offcanvasElement.addEventListener('shown.bs.offcanvas', function () {
-        var offset = 400;
-        div_content.style.marginLeft = offset + 'px';
-      });
-  
-      offcanvasElement.addEventListener('hidden.bs.offcanvas', function () {
-        div_content.style.marginLeft = '150px';
-      });
-    });
-  </script>
+    <h1>Sistema de Firma de Certificados para Prepas Estatales</h1>
 </body>
 </html>
 {% endblock %}

@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from django.contrib.messages import constants as mensajes
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,14 +87,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'external_db': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nombre_base_de_datos',
-        'USER': 'usuario',
-        'PASSWORD': 'contraseña',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    # 'default': {
+    #     'ENGINE': 'djfirebirdsql',
+    #     'NAME': '/opt/data/certificacion_p.gdb',#pruebas
+    #     # 'NAME': '/opt/data/certificacion.gdb',#producción
+    #     'HOST': '10.117.5.13',
+    #     'USER': 'SYSDBA',
+    #     'PASSWORD': 'key.18',
+    #     'PORT': 3050,
+    #     'OPTIONS': {
+    #         'charset': 'latin1',
+    #         'use_unicode': True,
+    #     },
+    # }
 }
 
 
@@ -130,7 +137,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -138,12 +145,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración para media y estaticos
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-STATICS_DIRS = (BASE_DIR / 'static')
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static/'),
+]
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 #CRISPY para forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Variables de sesión
+LOGOUT_REDIRECT_URL = reverse_lazy('login')
+LOGIN_REDIRECT_URL = reverse_lazy('Inicio')
+LOGIN_URL = reverse_lazy('login')
 
 # Tags para mensajes de exito, error etc.
 MESSAGE_TAGS = {
