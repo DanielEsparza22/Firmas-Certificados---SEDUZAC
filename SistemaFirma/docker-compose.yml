@@ -8,7 +8,8 @@ services:
     container_name: cerftificados-seduzac
     #restart: always
     depends_on:
-      - db
+      - primary_db
+      - migration_db
     ports:
       - 8001:8001
       # - 80:80
@@ -22,7 +23,7 @@ services:
       DEBUG: ${DEBUG}
       SECRET_KEY: ${SECRET_KEY}
 
-  db:
+  primary_db:
     image: mariadb
     container_name: cerftificados-seduzac-db
     #restart: always
@@ -32,10 +33,37 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - db:/var/lib/mysql
+      - primary_db:/var/lib/mysql
     ports:
       - 3310:3306
 
+  firebird:
+    image: firebird-2.5
+    container_name: firebird2
+    working_dir: /home
+    environment:
+      ISC_PASSWORD: masterkey
+      TZ : America/Mexico_City
+    volumes:
+      - /vagrant/Firmas-Certificados-SEDUZAC/FireBird/firebird2/data:/firebird/data
+      - /vagrant/Firmas-Certificados-SEDUZAC/FireBird/firebird2/dumps:/home
+    ports:
+      - "3050:3050"
+
+  migration_db:
+    image: mariadb
+    container_name: migracion-cerftificacion-db
+    #restart: always
+    environment:
+      MYSQL_DATABASE: ${MIGRATION_DB_NAME}
+      MYSQL_USER: ${MIGRATION_DB_USER}
+      MYSQL_PASSWORD: ${MIGRATION_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MIGRATION_DB_ROOT_PASSWORD}
+    volumes:
+      - migration_db:/var/lib/mysql
+    ports:
+      - 3311:3306
 
 volumes:
-  db:
+  primary_db:
+  migration_db:

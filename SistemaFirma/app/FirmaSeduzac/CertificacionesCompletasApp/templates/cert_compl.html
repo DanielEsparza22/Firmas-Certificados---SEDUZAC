@@ -5,10 +5,14 @@
 {% endblock title %}
 
 {% block content %}
-
 <body>
-
-<h2>Contenido para Certificaciones Completas</h2>
+    <h2>Certificaciones Completas</h2>
+    
+    <!-- Sección para verificar el certificado -->
+    {% include "existe_certificadoCC.html" %}
+    <!-- Sección para obtner la clave -->
+    {% include "clave_usuarioCC.html" %}
+    
 </body>
 </html>
 {% endblock %}

@@ -1,0 +1,31 @@
+<section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+    <h3>Clave del Alumno</h3>
+    {% if clave %}
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <tr>
+                <th>Clave del Alumno</th>
+                <th>CURP</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Nombre</th>
+                <th>Semestre</th>
+                <th>Clave CT</th>
+                <th>Estatus del Alumno</th>
+            </tr>
+            <tr>
+                <td>{{ clave.cve_alumno }}</td>
+                <td>{{ clave.curp }}</td>
+                <td>{{ clave.app_alumno }}</td>
+                <td>{{ clave.apm_alumno }}</td>
+                <td>{{ clave.nom_alumno }}</td>
+                <td>{{ clave.semestre }}</td>
+                <td>{{ clave.clave_ct }}</td>
+                <td>{{ clave.alumno_estatus }}</td>
+            </tr>
+        </table>
+    </div>
+    {% elif error_clave %}
+    <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error_clave }}</p>
+    {% endif %}
+</section>

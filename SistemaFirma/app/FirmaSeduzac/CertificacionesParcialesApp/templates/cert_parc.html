@@ -5,20 +5,16 @@
 {% endblock title %}
 
 {% block content %}
-
 <body>
-
     <h2>Certificaciones Parciales</h2>
-
-    <form method="post" style="width: 100%;">
-        {% csrf_token %}
-        <div style="display: flex; align-items: center;">
-            <div>
-                <label for="id_curp">CURP del Alumno:</label>
-                {{ form.curp }}
-            </div>
-            <button type="submit" class="btn btn-success" style="margin-left: 10px; margin-top: 30px">Enviar</button>
-        </form>    
+    
+    <!-- Sección para verificar el certificado -->
+    {% include "existe_certificadoCP.html" %}
+    <!-- Sección para obtner la clave -->
+    {% include "clave_usuarioCP.html" %}
+    <!-- Sección para obtner registros e insertar -->
+    {% include "registros_insertarCP.html" %}
+    
 </body>
 </html>
 {% endblock %}

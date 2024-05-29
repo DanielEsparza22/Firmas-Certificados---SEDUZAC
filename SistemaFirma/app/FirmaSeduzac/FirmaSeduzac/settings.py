@@ -87,13 +87,21 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    # 'default': {
-    #     'ENGINE': 'djfirebirdsql',
-    #     'NAME': '/opt/data/certificacion_p.gdb',#pruebas
+    'mariadb': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'migracion_certificaciones_seduzac',
+        'USER': 'certuser',
+        'PASSWORD': 'admin1234',
+        'HOST': '192.168.33.10',
+        'PORT': '3311',
+    }
+    # 'firebird': {
+    #     'ENGINE': 'firebird',
+    #     'NAME': '/firebird/data/certificacion.gdb',#pruebas
     #     # 'NAME': '/opt/data/certificacion.gdb',#producción
-    #     'HOST': '10.117.5.13',
+    #     'HOST': 'firebird2',
     #     'USER': 'SYSDBA',
-    #     'PASSWORD': 'key.18',
+    #     'PASSWORD': 'masterkey',
     #     'PORT': 3050,
     #     'OPTIONS': {
     #         'charset': 'latin1',

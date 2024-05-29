@@ -1,2 +1,6 @@
-django
-mysqlclient
+asgiref==3.8.1
+Django==5.0.6
+django-firebird==2.2.1
+mysqlclient==2.2.4
+python-dotenv==1.0.1
+sqlparse==0.5.0
