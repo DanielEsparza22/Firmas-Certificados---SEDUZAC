@@ -32,7 +32,9 @@
                 </div>
             </div>
         </div>
+        {% if boton_enviar %}
         <button type="submit" name="obtener_registros" value="obtener_registros" class="btn btn-success" style="margin-top: 30px;">Enviar Datos</button>
+        {% endif %}
     {% if registros_info %}
     <hr>
     <h3>Registros</h3>
@@ -134,7 +136,15 @@
     {% elif error_registros_insertar %}
     <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error_registros_insertar }}</p>
     {% endif %}
-    {% if mensaje_insertar %}
-    <div class="alert alert-success" style="margin-top: 20px;">{{ mensaje_insertar }}</div>
-    {% endif %}
+    <div style="margin-top: 20px; display: flex; align-items: center;">
+        {% if mensaje_insertar %}
+        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_insertar }}</div>
+        {% endif %}
+        {% if mensaje_firma %}
+        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_firma }}</div>
+        {% endif %}
+        {% if boton_firmar %}
+        <button type="submit" name="firmar" value="firmar" class="btn btn-primary btn-lg" style="margin-left: 20px;">Firmar Certificado</button>
+        {% endif %}
+    </div>    
 </section>

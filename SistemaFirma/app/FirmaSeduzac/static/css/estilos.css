@@ -1,0 +1,19 @@
+.custom-btn {
+    color: #fff;
+    background-color: #e37770;
+    border-color: #e37770;
+    box-shadow: none;
+    width: 100%;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .custom-btn:hover {
+    background-color: #d3645e;
+    border-color: #d3645e;
+  }
+
+  .custom-btn:active,
+  .custom-btn:focus {
+    background-color: #c5534d !important;
+    border-color: #c5534d !important;
+  }

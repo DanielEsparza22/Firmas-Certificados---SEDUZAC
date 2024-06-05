@@ -3,6 +3,10 @@ from .forms import CURPForm, RegistrosParcialesForm
 from django.contrib.auth.decorators import login_required
 from .utils import test_consulta_datos
 from django.db import connection, connections
+from .utils import api_firma, fecha_a_texto
+from datetime import datetime
+import json
+from FirmaSeduzac.settings import LETRA_FOLIO
 
 
 def verificar_certificado(cursor, curp):
@@ -41,9 +45,9 @@ def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, b
         "SELECT a.cve_alumno AS id_hist_estudio, "
         "a.curp, 0 AS id_proceso, NULL AS certificado_digital, 0 AS estatus_foto, 0 AS estatus_certificado, "
         "CURDATE() AS fecha_creacion, NULL AS fecha_firma, NULL AS sello_sep ,NULL AS fecha_sello_sep, NULL AS folio_sep, "
-        "s.id_genero_ct, s.nombre, e.clave_ct, NULL AS nivel_ct, TRIM(REPLACE(a.app_alumno, CHAR(9), ' ')) AS prim_apellido, "
+        "s.id_genero_ct, s.nombre AS nombre_ct, e.clave_ct, NULL AS nivel_ct, TRIM(REPLACE(a.app_alumno, CHAR(9), ' ')) AS prim_apellido, "
         "TRIM(REPLACE(a.apm_alumno, CHAR(9), ' ')) AS seg_apellido, TRIM(REPLACE(a.nom_alumno, CHAR(9), ' ')) AS nombre, a.promedio, "
-        "%s AS fecha_cert, NULL AS fecha_cert_texto, 4 AS tipo_cert, 32 AS entidad, '000' AS cve_mun, s.municipio AS nom_municipio, "
+        "%s AS fecha_cert, NULL AS fecha_cert_texto, 3 AS tipo_cert, 32 AS entidad, '000' AS cve_mun, s.municipio AS nom_municipio, "
         "NULL AS observaciones_tec, NULL AS sello_seduzac, %s AS fecha_certificacion, %s AS bachillerato, %s AS semestre, "
         "'MARIBEL VILLALPANDO HARO. SECRETARIA DE EDUCACIÓN DEL ESTADO DE ZACATECAS.' AS autoridad_educativa, '00000000000000008682' AS certificado_autoridad_educativa "
         "FROM alumnos a "
@@ -70,12 +74,78 @@ def insertar_registros(cursor, registros):
                 registro['id_hist_estudio'], registro['curp'], registro['id_proceso'], registro['certificado_digital'],
                 registro['estatus_foto'], registro['estatus_certificado'], registro['fecha_creacion'], registro['fecha_firma'],
                 registro['sello_sep'], registro['fecha_sello_sep'], registro['folio_sep'], registro['id_genero_ct'], 
-                registro['nombre'], registro['clave_ct'], registro['nivel_ct'], registro['prim_apellido'], registro['seg_apellido'],
+                registro['nombre_ct'], registro['clave_ct'], registro['nivel_ct'], registro['prim_apellido'], registro['seg_apellido'],
                 registro['nombre'], registro['promedio'], registro['fecha_cert'], registro['fecha_cert_texto'], registro['tipo_cert'], 
                 registro['entidad'], registro['cve_mun'], registro['nom_municipio'], registro['observaciones_tec'], 
                 registro['sello_seduzac'], registro['fecha_certificacion'], registro['bachillerato'], registro['semestre'], 
                 registro['autoridad_educativa'], registro['certificado_autoridad_educativa']
             ))
+        
+def obtener_valores_cadena(cursor, curp):
+    rfc = "SAFC7105149R3"
+    documento = "certificado"
+    sistema = "certificacion"
+    cadena = ""
+
+    query = (
+        "SELECT a.curp, a.nom_alumno, a.app_alumno, a.apm_alumno, a.promedio, s.clave_ct FROM alumnos a "
+        "JOIN escuela_bachillerato s ON s.cve_bach_ct = a.cve_bach_ct "
+        "WHERE a.curp = %s"
+    )
+
+    cursor.execute(query, [curp])
+    alumno = cursor.fetchone()
+
+    if(alumno):
+        curp_alumno = alumno[0]
+        nombre = alumno[1]
+        ap_paterno = alumno[2]
+        ap_materno = alumno[3]
+        promedio = alumno[4]
+        clavecct = alumno[5]
+        fecha = datetime.now()
+        fecha_final = fecha.strftime('%Y-%m-%d %H:%M:%S')
+
+    print(alumno)
+
+    cadena = f"||1.0|3|SAFC710514MDFLLR06|Secretaria de Educación|SECRETARÍA DE EDUCACIÓN DEL ESTADO DE ZACATECAS|Secretaría de Educación del Estado de Zacatecas|{clavecct}|000|32|{curp_alumno}|{nombre}|{ap_paterno}|{ap_materno}|3|{promedio}|{fecha_final}||"
+    # print(cadena)
+    firma = api_firma(rfc, documento, sistema, cadena)
+    respuesta_json = json.loads(firma)
+    sello = respuesta_json["sello"]
+    uuid = respuesta_json["uuid"]
+    fecha_firma = respuesta_json["fecha"]
+    # print(f'SELLO : {sello}')
+    # print(f'UUID : {uuid}')
+    # print(f'FECHA : {fecha_firma}')
+
+    valores_cadena = {'sello':sello, 'uuid':uuid, 'fecha':fecha_firma}
+
+    return valores_cadena
+
+def fecha_cert_texto(valores_cadena):
+    fecha_texto = valores_cadena['fecha']
+    fecha_res = fecha_a_texto(fecha_texto)
+
+    return fecha_res
+
+def firmar_certificado(cursor, curp, valores_cadena):
+    id_proceso = 11111
+    certificado_digital = ""
+    estatus = 1
+    fecha_firma = valores_cadena['fecha']
+    fecha_texto = fecha_cert_texto(valores_cadena)
+    sello = valores_cadena['sello']
+
+    query = (
+        "UPDATE alumno_cert_parcial SET id_proceso = %s, certificado_digital = %s, estatus_certificado = %s, "
+        "fecha_firma = %s, fecha_cert_texto = %s, sello_seduzac = %s WHERE curp = %s"
+    )
+    cursor.execute(query, [id_proceso, certificado_digital, estatus, fecha_firma, fecha_texto, sello, curp])
+
+def generar_folio_prepas():
+    print(f'LETRA: {LETRA_FOLIO}')
+
 
 @login_required
 def certificaciones_parciales(request):
@@ -88,11 +158,21 @@ def certificaciones_parciales(request):
     mensaje_insercion = None
     form_curp = CURPForm(request.POST or None)
     form_registros = RegistrosParcialesForm(request.POST or None)
+    boton_enviar_datos = True
+    boton_firmar = False
+    curp = None
+    seccion_foliador = False
+    seccion_curp = True
+    seccion_insertar = True
+    seccion_clave = True
+    mensaje_firma = None
+
 
     if(request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
             if(form_curp.is_valid()):
                 curp = form_curp.cleaned_data['curp'].upper()
+                request.session['curp'] = curp #Aqui guardo la curp en la sesion
                 alumno_info = verificar_certificado(cursor, curp)
                 clave_info = obtener_clave_alumno(cursor, curp)
 
@@ -118,11 +198,23 @@ def certificaciones_parciales(request):
                     if resultados:
                         insertar_registros(cursor, resultados)
                         mensaje_insercion = "Registro insertado con éxito."
+                        boton_enviar_datos = False
+                        boton_firmar = True
                     else:
                         error_registros_insertar = "No se encontraron registros para insertar."
+                elif('firmar' in request.POST):
+                    curp = request.session.get('curp', None) #Recupero la curp de la sesion
+                    if(curp):
+                        valores_cadena = obtener_valores_cadena(cursor, curp)
+                        # print(f'Valores de la cadena: {valores_cadena}')
+                        # print(fecha_cert_texto(valores_cadena))
+                        firmar_certificado(cursor, curp, valores_cadena)
+                        mensaje_firma = "Se firmó correctamente el certificado."
+                        seccion_foliador = True
+                        seccion_curp = False
+                        seccion_insertar = False
+                        seccion_clave = False
 
-                print(f'clave: {clave}, fecha: {fecha_cert}, fecha_certificacion: {fecha_certificacion}, bachillerato: {bachillerato}')
-                print(registros_insertar)
 
     return render(request, 'cert_parc.html', {
         'form': form_curp,
@@ -134,4 +226,12 @@ def certificaciones_parciales(request):
         'registros_info': registros_insertar,
         'error_registros_insertar': error_registros_insertar,
         'mensaje_insertar': mensaje_insercion,
+        'boton_enviar':boton_enviar_datos,
+        'boton_firmar':boton_firmar,
+        'seccion_foliar':seccion_foliador,
+        'mensaje_firma':mensaje_firma,
+        'seccion_curp':seccion_curp,
+        'seccion_clave':seccion_clave,
+        'seccion_insertar':seccion_insertar,
+
     })
