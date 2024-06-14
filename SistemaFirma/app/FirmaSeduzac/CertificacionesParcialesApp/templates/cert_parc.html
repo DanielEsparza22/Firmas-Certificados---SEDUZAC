@@ -9,21 +9,16 @@
     <h2>Certificaciones Parciales</h2>
     
     <!-- Sección para verificar el certificado -->
-    {% if seccion_curp %}
         {% include "existe_certificadoCP.html" %}
-    {% endif %}
     <!-- Sección para obtner la clave -->
-    {% if seccion_clave %}
         {% include "clave_usuarioCP.html" %}
-    {% endif %}
     <!-- Sección para obtner registros e insertar -->
-    {% if seccion_insertar %}
         {% include "registros_insertarCP.html" %}
-    {% endif %}
     <!-- Sección para obtner foliar despues de firmar -->
     {% if seccion_foliar %}
         {% include "foliadorCP.html" %}
     {% endif %}
+    <a href="{% url 'reiniciar_foliador_cp' %}" class="btn btn-info">Reiniciar Foliador</a>
     
 </body>
 </html>

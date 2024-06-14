@@ -83,25 +83,59 @@
     <div class="sidebar">
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-header">MENÚ</li>
+          <li class="nav-header" style="font-size: 20px; font-weight: bold;">MENÚ</li>
           <li class="nav-item">
-            <a href="{% url 'certificaciones_completas' %}" class="nav-link">
+            <a href="#" class="nav-link {% if '/certificados_completos/' in request.path %}active{% endif %}">
             <i class="bi bi-mortarboard-fill"></i>
               <p style="margin-left:10px">
                 Certificaciones Completas
+                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'certificaciones_completas' %}" class="nav-link {% if request.path == '/certificados_completos/' %}active{% endif %}">
+                  <i class="bi bi-pen"></i>
+                  <p style="margin-left:10px">Insertar y Firmar</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'consultar_registros_no_firma_cc' %}" class="nav-link {% if request.path == '/certificados_completos/consultar_registros/' %}active{% endif %}">
+                  <i class="bi bi-search"></i>
+                  <p style="margin-left:10px">Consultar Registros</p>
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a href="{% url 'certificaciones_parciales' %}" class="nav-link">
+            <a href="#" class="nav-link {% if '/certificados_parciales/' in request.path %}active{% endif %}">
                 <i class="bi bi-mortarboard-fill"></i>
-              <p style="margin-left:10px">
+              <p style="margin-left:10px;">
                 Certificaciones Parciales
+                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'certificaciones_parciales' %}" class="nav-link {% if '/certificados_parciales/' in request.path %}active{% endif %}">
+                  <i class="bi bi-pen"></i>
+                  <p style="margin-left:10px">Insertar y Firmar</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="bi bi-search"></i>
+                  <p style="margin-left:10px">Consultar Registros</p>
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a href="{% url 'bachillerato_distancia' %}" class="nav-link">
+            <a href="{% url 'bachillerato_distancia' %}" class="nav-link {% if '/bachillerato_distancia/' in request.path %}active{% endif %}">
                 <i class="bi bi-mortarboard-fill"></i>
               <p style="margin-left:10px">
                 Bachillerato a distancia
@@ -109,7 +143,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'por_escuela' %}" class="nav-link">
+            <a href="{% url 'por_escuela' %}" class="nav-link {% if '/por_escuela/' in request.path %}active{% endif %}">
                 <i class="bi bi-mortarboard-fill"></i>
               <p style="margin-left:10px">
                 Por Escuela

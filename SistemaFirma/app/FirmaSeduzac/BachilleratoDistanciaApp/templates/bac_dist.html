@@ -7,9 +7,14 @@
 {% block content %}
 
 <body>
-
-    <h2>Contenido para Bachillerato a Distancia</h2>
-
+    <h2>Certificaciones para Bachillerato a Distancia</h2>
+    <!-- Sección para obtner registros e insertar -->
+    {% include "registros_insertarBD.html" %}
+    <!-- Sección para obtner foliar despues de firmar -->
+    {% if seccion_foliar %}
+        {% include "foliadorCP.html" %}
+    {% endif %}
+    <a href="{% url 'reiniciar_foliador_bd' %}" class="btn btn-info">Reiniciar Foliador</a>
 
 </body>
 </html>

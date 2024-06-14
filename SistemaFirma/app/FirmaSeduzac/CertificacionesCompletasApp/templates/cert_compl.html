@@ -12,6 +12,13 @@
     {% include "existe_certificadoCC.html" %}
     <!-- Sección para obtner la clave -->
     {% include "clave_usuarioCC.html" %}
+    <!-- Sección para insertar registros -->
+    {% include "registros_insertarCC.html" %}
+    <!-- Sección para obtner foliar despues de firmar -->
+    {% if seccion_foliar %}
+        {% include "foliadorCC.html" %}
+    {% endif %}
+    <a href="{% url 'reiniciar_foliador_cc' %}" class="btn btn-info">Reiniciar Foliador</a>
     
 </body>
 </html>

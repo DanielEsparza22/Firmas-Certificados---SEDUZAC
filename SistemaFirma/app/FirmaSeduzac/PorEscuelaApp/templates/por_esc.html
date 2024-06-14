@@ -7,9 +7,14 @@
 {% block content %}
 
 <body>
-
-  <h2>Contenido Por Escuela</h2>
-
+  <h2>Certificaciones Por Escuela</h2>
+  <!-- Sección para obtner registros e insertar -->
+  {% include "registros_insertarPE.html" %}
+  <!-- Sección para obtner foliar despues de firmar -->
+  {% if seccion_foliar %}
+    {% include "foliadorCP.html" %}
+  {% endif %}
+  <a href="{% url 'reiniciar_foliador_pe' %}" class="btn btn-info">Reiniciar Foliador</a>
 </body>
 </html>
 {% endblock %}

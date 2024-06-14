@@ -1,12 +1,13 @@
-from django.shortcuts import render
-from .forms import CURPForm, RegistrosParcialesForm
+from django.shortcuts import render, redirect
+from .forms import CURPForm, RegistrosParcialesForm, LetraFoliadorForm
 from django.contrib.auth.decorators import login_required
 from .utils import test_consulta_datos
 from django.db import connection, connections
-from .utils import api_firma, fecha_a_texto
+from .utils import api_firma, fecha_a_texto, reiniciar_secuencia_folio
 from datetime import datetime
 import json
-from FirmaSeduzac.settings import LETRA_FOLIO
+from FirmaSeduzac.settings import LETRA_FOLIO_TB
+from .models import FolioSequenceCP, FolioLetraCP
 
 
 def verificar_certificado(cursor, curp):
@@ -143,8 +144,52 @@ def firmar_certificado(cursor, curp, valores_cadena):
     )
     cursor.execute(query, [id_proceso, certificado_digital, estatus, fecha_firma, fecha_texto, sello, curp])
 
-def generar_folio_prepas():
-    print(f'LETRA: {LETRA_FOLIO}')
+def obtener_clave_cct(cursor,curp):
+    query = (
+        "SELECT ac.clavecct FROM alumno_cert_parcial ac WHERE ac.curp = %s"
+    )
+    cursor.execute(query,[curp])
+    clavecct = cursor.fetchone()
+    clavecct = clavecct[0]
+    
+    # print(f'LETRA: {LETRA_FOLIO}')
+    return clavecct
+
+def foliar_certificado_prepas(cursor, clavecct, curp):
+    try:
+        foliador_prepa = FolioLetraCP.objects.latest('id')
+    except:
+        foliador_prepa = 'A'
+
+    clave = clavecct[2:5]
+    foliador = None
+    if(clave == 'EBH' or 'PBH'):
+        foliador = foliador_prepa
+    elif(clave == 'ETK'):
+        foliador = LETRA_FOLIO_TB
+
+    folio_sequence = FolioSequenceCP.objects.create()
+    folio_id = folio_sequence.id
+
+    folio = f'{foliador}{str(folio_id).zfill(4)}'
+
+    query = (
+        "UPDATE alumno_cert_parcial SET folio_sep = %s WHERE curp = %s"
+    )
+
+    cursor.execute(query,[folio,curp])
+    # print(f'FOLIADOR: {foliador}')
+
+def datos_foliar(cursor, curp):
+    query = (
+        "SELECT * FROM alumno_cert_parcial WHERE curp = %s"
+    )
+
+    cursor.execute(query,[curp])
+    registros_folio = cursor.fetchone()
+
+    # print(registros_folio)
+    return registros_folio
 
 
 @login_required
@@ -162,11 +207,8 @@ def certificaciones_parciales(request):
     boton_firmar = False
     curp = None
     seccion_foliador = False
-    seccion_curp = True
-    seccion_insertar = True
-    seccion_clave = True
     mensaje_firma = None
-
+    datos_foliador = None
 
     if(request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
@@ -211,9 +253,13 @@ def certificaciones_parciales(request):
                         firmar_certificado(cursor, curp, valores_cadena)
                         mensaje_firma = "Se firmó correctamente el certificado."
                         seccion_foliador = True
-                        seccion_curp = False
-                        seccion_insertar = False
-                        seccion_clave = False
+                        boton_enviar_datos = False
+                        datos_foliador = datos_foliar(cursor, curp)
+                elif('foliar' in request.POST):
+                    curp = request.session.get('curp', None) #Recupero la curp de la sesion
+                    if(curp):
+                        clave = obtener_clave_cct(cursor, curp)
+                        foliar_certificado_prepas(cursor, clave, curp)
 
 
     return render(request, 'cert_parc.html', {
@@ -230,8 +276,18 @@ def certificaciones_parciales(request):
         'boton_firmar':boton_firmar,
         'seccion_foliar':seccion_foliador,
         'mensaje_firma':mensaje_firma,
-        'seccion_curp':seccion_curp,
-        'seccion_clave':seccion_clave,
-        'seccion_insertar':seccion_insertar,
-
+        'datos_foliar':datos_foliador,
     })
+
+def reiniciar_foliador_cp(request):
+    mensaje = None
+    letra_form = LetraFoliadorForm(request.POST or None)
+    if(request.method == 'POST'):
+        if(letra_form.is_valid()):
+            letra_foliador = letra_form.cleaned_data['letra_foliador'].upper()
+            FolioLetraCP.objects.all().delete()
+            FolioLetraCP.objects.create(letra=letra_foliador)
+            reiniciar_secuencia_folio()
+            mensaje = f'Foliador restablecido: Letra nueva: {letra_foliador}, Secuencia restablecida a 1'
+
+    return render(request,"reiniciar_foliador_cp.html",{'letra_form':letra_form, 'mensaje':mensaje})

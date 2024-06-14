@@ -1,5 +1,4 @@
 from django import forms
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 class CURPForm(forms.Form):
     curp = forms.CharField(label='CURP',
@@ -27,3 +26,10 @@ class RegistrosParcialesForm(forms.Form):
     label="Semestre",
     widget=forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 6}),
 )
+
+class LetraFoliadorForm(forms.Form):
+    letra_foliador = forms.CharField(
+        label = "Letra",
+        max_length=1,
+        widget = forms.TextInput(attrs={'class':'form-control'})
+    )

@@ -2,15 +2,7 @@ from django.db import connection, connections
 import requests
 import json
 from datetime import datetime
-from .models import FolioSequenceCP
-
-
-def test_consulta_datos():
-    with connections['mariadb'].cursor() as cursor:
-        cursor.execute("SELECT * FROM alumnos LIMIT 5")
-        rows = cursor.fetchall()
-        for row in rows:
-            print(row)
+from .models import FolioSequenceCC
 
 def api_firma(rfc, documento, sistema, cadena):
     url = "http://api-firma.k8.seduzac.gob.mx/sello-json"
@@ -64,7 +56,9 @@ def fecha_a_texto(fecha_str):
 
 def reiniciar_secuencia_folio():
     with connection.cursor() as cursor:
-        FolioSequenceCP.objects.all().delete()
+        FolioSequenceCC.objects.all().delete()
 
-        cursor.execute("ALTER TABLE CertificacionesParcialesApp_foliosequencecp AUTO_INCREMENT = 1;")
-        
+        cursor.execute("ALTER TABLE CertificacionesCompletasApp_foliosequencecc AUTO_INCREMENT = 1;")
+
+        print("Secuencia de folio reiniciada a 0.")
+

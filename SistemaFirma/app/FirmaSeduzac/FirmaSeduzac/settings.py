@@ -84,8 +84,12 @@ WSGI_APPLICATION = 'FirmaSeduzac.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'certificaciones_seduzac',
+        'USER': 'certuser',
+        'PASSWORD': 'admin1234',
+        'HOST': '192.168.33.10',
+        'PORT': '3310',
     },
     'mariadb': {
         'ENGINE': 'django.db.backends.mysql',
@@ -173,11 +177,11 @@ LOGIN_URL = reverse_lazy('login')
 MESSAGE_TAGS = {
     mensajes.DEBUG: 'debug',
     mensajes.INFO: 'info',
-    mensajes.SUCCESS: 'succes',
+    mensajes.SUCCESS: 'success',
     mensajes.WARNING: 'warning',
     mensajes.ERROR: 'danger',
 }
 
-LETRA_FOLIO = 'G'
 LETRA_FOLIO_TB = 'TB'
+LETRA_FOLIO_BACHILLERATO_DISTANCIA = 'BD'
 
