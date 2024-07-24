@@ -1,0 +1,43 @@
+<section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+    <h3>Datos del Alumno</h3>
+    {% if datos_alumno %}
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <tr>
+                <th>CURP</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Nombre</th>
+                <th style="text-align:center;">Estatus del Alumno</th>
+            </tr>
+            <tr>
+                <td>{{ datos_alumno.curp }}</td>
+                <td>{{ datos_alumno.app_alumno }}</td>
+                <td>{{ datos_alumno.apm_alumno }}</td>
+                <td>{{ datos_alumno.nom_alumno }}</td>
+                {% if datos_alumno.alumno_estatus == "I" %}
+                <td style="text-align:center;">TERMINADO CON CERTIFICADO IMPRESO</td>
+                {% elif datos_alumno.alumno_estatus == "N" %}
+                <td style="text-align:center;">NUEVO / ALTA</td>
+                {% elif datos_alumno.alumno_estatus == "B" %}
+                <td style="text-align:center;">BAJA TEMPORAL</td>
+                {% elif datos_alumno.alumno_estatus == "D" %}
+                <td style="text-align:center;">BAJA DEFINITIVA</td>
+                {% elif datos_alumno.alumno_estatus == "R" %}
+                <td style="text-align:center;">PROMOVIDO IRREGULAR</td>
+                {% elif datos_alumno.alumno_estatus == "P" %}
+                <td style="text-align:center;">PROMOVIDO</td>
+                {% elif datos_alumno.alumno_estatus == "X" %}
+                <td style="text-align:center;">ERRONEO</td>
+                {% elif datos_alumno.alumno_estatus == "V" %}
+                <td style="text-align:center;">VERIFICADO</td>
+                {% elif datos_alumno.alumno_estatus == "W" %}
+                <td style="text-align:center;">REGISTRO ELIMINADO</td>
+                {% endif %}
+            </tr>
+        </table>
+    </div>
+    {% elif error_clave %}
+    <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error_clave }}</p>
+    {% endif %}
+</section>

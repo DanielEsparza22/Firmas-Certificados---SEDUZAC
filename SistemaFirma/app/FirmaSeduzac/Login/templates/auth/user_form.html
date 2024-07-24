@@ -17,6 +17,13 @@
 <div class="register-box">
   <div class="card card-outline card-primary">
     <div class="card-body">
+      {% if messages %}
+      <div class="alert alert-danger">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
       <form method="post">
         {% csrf_token %}
         <div class="input-group mb-3">

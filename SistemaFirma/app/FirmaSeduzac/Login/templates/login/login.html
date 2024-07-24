@@ -17,8 +17,19 @@
   <!-- Estilos -->
   <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
 
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+
+  <style>
+    body {
+      background: url("{% static 'img/funky-lines.png' %}") center center fixed;
+    }
+  </style>
+
 </head>
 <body class="hold-transition login-page">
+  <div class="text-center mb-4">
+    <img src="{% static 'img/escudo-removebg.png' %}" alt="Logo" class="img-fluid" style="max-width: 250px;">
+  </div>
 <div class="login-box">
   <!-- /.login-logo -->
   <div class="card card-outline card-primary">

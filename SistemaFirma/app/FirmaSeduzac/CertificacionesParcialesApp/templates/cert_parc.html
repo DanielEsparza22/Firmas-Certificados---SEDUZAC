@@ -1,24 +1,33 @@
 {% extends "base2.html" %}
 
-{% block title %}
+{% block titulo %}
     Certificaciones Parciales
-{% endblock title %}
+{% endblock titulo %}
 
 {% block content %}
 <body>
-    <h2>Certificaciones Parciales</h2>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Certificaciones Parciales</h2>
+    </section>
     
     <!-- Sección para verificar el certificado -->
         {% include "existe_certificadoCP.html" %}
     <!-- Sección para obtner la clave -->
+    {% if seccion_datos %}
         {% include "clave_usuarioCP.html" %}
-    <!-- Sección para obtner registros e insertar -->
-        {% include "registros_insertarCP.html" %}
-    <!-- Sección para obtner foliar despues de firmar -->
-    {% if seccion_foliar %}
-        {% include "foliadorCP.html" %}
     {% endif %}
-    <a href="{% url 'reiniciar_foliador_cp' %}" class="btn btn-info">Reiniciar Foliador</a>
+    <!-- Sección para insertar registros -->
+    {% if seccion_guardar %}
+        {% include "registros_insertarCP.html" %}
+    {% endif %}
+    <div style="margin-top: 20px; display: flex; align-items: center;">
+        {% if mensaje_insertar %}
+        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_insertar }}</div>
+        {% elif error_registros_insertar %}
+        <div class="alert alert-danger" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ error_registros_insertar }}</div>
+        {% endif %}
+    </div>   
+    {% comment %} <a href="{% url 'reiniciar_foliador_cp' %}" class="btn btn-info">Reiniciar Foliador</a> {% endcomment %}
     
 </body>
 </html>

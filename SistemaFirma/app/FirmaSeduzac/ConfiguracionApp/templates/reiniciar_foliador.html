@@ -1,0 +1,47 @@
+{% extends "base2.html" %}
+
+{% block title %}
+    Reiniciar Foliador
+{% endblock title %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Configuración</h2>
+    </section>
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Reiniciar Foliador</h3>
+        <form method="post" style="width: 100%;">
+            {% csrf_token %}
+            <div style="display: flex; align-items: center;">
+                <div>
+                    {{ letra_form.as_p }}
+                </div>
+                <button type="button" class="btn btn-success" style="margin-left: 10px; margin-top: 17px" data-bs-toggle="modal" data-bs-target="#exampleModal">Reiniciar</button>
+            </div>
+        
+    </section>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Folio</h1>
+            </div>
+            <div class="modal-body">
+            Se reiniciará la secuencia del folio y se cambiara la letra
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+        </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% if mensaje %}
+    <p class="alert alert-success" style="width:50%; margin-top:10px">{{ mensaje }}</p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

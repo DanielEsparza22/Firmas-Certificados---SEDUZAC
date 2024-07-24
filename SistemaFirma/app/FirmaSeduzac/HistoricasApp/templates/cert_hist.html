@@ -1,0 +1,18 @@
+
+{% extends "base2.html" %}
+
+{% block titulo %}
+    Certificaciones Historicas
+{% endblock titulo %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+    <h2>Certificaciones Históricas(Feria)</h2>
+    </section>
+    <!-- Sección para verificar el certificado -->
+    {% include "buscar_certificado_hist.html" %}
+
+</body>
+</html>
+{% endblock %}

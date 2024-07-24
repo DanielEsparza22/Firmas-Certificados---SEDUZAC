@@ -4,7 +4,7 @@
         {% csrf_token %}
         <div style="display: flex; align-items: center;">
             <div>
-                <label for="id_curp">CURP del Alumno:</label>
+                <label for="id_curp">Ingrese la CURP del alumno:</label>
                 {{ form.curp }}
             </div>
             <button type="submit" class="btn btn-success" style="margin-left: 10px; margin-top: 30px">Enviar</button>
@@ -16,86 +16,86 @@
         <div style="overflow-x: auto;">
             <table class="table">
                 <tr>
-                    <th>ID Historial de Estudio</th>
                     <th>CURP</th>
-                    <th>ID Proceso</th>
-                    <th>Certificado Digital</th>
-                    <th>Estatus Foto</th>
                     <th>Estatus Certificado</th>
-                    <th>Fecha de Creación</th>
-                    <th>Fecha de Firma</th>
-                    <th>Sello SEP</th>
-                    <th>Fecha de Sello SEP</th>
                     <th>Folio SEP</th>
-                    <th>ID Genero CT</th>
-                    <th>Nombre CT</th>
-                    <th>Clave CCT</th>
-                    <th>Nivel CT</th>
+                    <th style="text-align:center">Nombre CT</th>
+                    <th>Clave CT</th>
                     <th>Primer Apellido</th>
                     <th>Segundo Apellido</th>
                     <th>Nombre</th>
                     <th>Promedio</th>
                     <th>Fecha de Certificado</th>
-                    <th>Fecha de Certificado en Texto</th>
-                    <th>Tipo Certificado</th>
-                    <th>Entidad</th>
-                    <th>Clave Municipio</th>
-                    <th>Nombre Municipio</th>
                     <th>Observaciones</th>
                     <th style="text-align:center">Sello SEDUZAC</th>
                     <th>Fecha Certificación</th>
                     <th>Bachillerato</th>
-                    <th>Certificación</th>
                     <th>Autoridad Educativa</th>
                     <th>Certificado Autoridad Educativa</th>
                 </tr>
                 <tr>
-                    <td>{{ alumno_info.id_hist_estudio }}</td>
                     <td>{{ alumno_info.curp }}</td>
-                    <td>{{ alumno_info.id_proceso }}</td>
-                    <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                        <div style="overflow-x: auto; white-space: nowrap;">
-                            {{ alumno_info.certificado_digital }}
-                        </div>
-                    </td>
-                    <td>{{ alumno_info.estatus_foto }}</td>
-                    <td>{{ alumno_info.estatus_certificado }}</td>
-                    <td>{{ alumno_info.fecha_creacion }}</td>
-                    <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                        <div style="overflow-x: auto; white-space: nowrap;">
-                            {{ alumno_info.fecha_firma }}
-                        </div>
-                    </td>
-                    <td>{{ alumno_info.sello_sep }}</td>
-                    <td>{{ alumno_info.fecha_sello_sep }}</td>
-                    <td>{{ alumno_info.folio_sep }}</td>
-                    <td>{{ alumno_info.id_genero_ct }}</td>
-                    <td>{{ alumno_info.nombre_ct }}</td>
+                    {% if alumno_info.estatus_certificado == 1 %}
+                        <td>Firmado</td>
+                    {% elif alumno_info.estatus_certificado == 0 %}
+                        <td>Por Firmar</td>
+                    {% elif alumno_info.estatus_certificado == 2 %}
+                        <td>Firmado SEP</td>
+                    {% elif alumno_info.estatus_certificado == 3 %}
+                        <td>Cancelado</td>
+                    {% elif alumno_info.estatus_certificado == 4 %}
+                        <td>Impreso</td>
+                    {% elif alumno_info.estatus_certificado == 5 %}
+                        <td>Para Cancelar</td>
+                    {% elif alumno_info.estatus_certificado == 103 %}
+                        <td>Validada</td>
+                    {% elif alumno_info.estatus_certificado == 100 %}
+                        <td>Inicial Feria de Servicios</td>
+                    {% elif alumno_info.estatus_certificado == 101 %}
+                        <td>Procesando</td>
+                    {% elif alumno_info.estatus_certificado == 102 %}
+                        <td>No se encontró información</td>
+                    {% endif %}
+                    {% if alumno_info.folio_sep %}
+                        <td>{{ alumno_info.folio_sep }}</td>
+                    {% else %}
+                        <td>Sin Folio</td>
+                        {% endif %}
+                        <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                            <div style="overflow-x: auto; white-space: nowrap;">
+                                {{ alumno_info.nombre_ct }}
+                            </div>
+                        </td>
                     <td>{{ alumno_info.clavecct }}</td>
-                    <td>{{ alumno_info.nivel_ct }}</td>
                     <td>{{ alumno_info.prim_apellido }}</td>
                     <td>{{ alumno_info.seg_apellido }}</td>
                     <td>{{ alumno_info.nombre }}</td>
+                    {% if alumno_info.promedio %}
                     <td>{{ alumno_info.promedio }}</td>
+                    {% else %}
+                    <td>Sin Promedio</td>
+                    {% endif %}
                     <td>{{ alumno_info.fecha_cert }}</td>
-                    <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                        <div style="overflow-x: auto; white-space: nowrap;">
-                            {{ alumno_info.fecha_cert_texto }}
-                        </div>
-                    </td>
-                    <td>{{ alumno_info.tipo_cert }}</td>
-                    <td>{{ alumno_info.entidad }}</td>
-                    <td>{{ alumno_info.cv_mun }}</td>
-                    <td>{{ alumno_info.nom_mun }}</td>
+                    {% if alumno_info.observaciones_tec %}
                     <td>{{ alumno_info.observaciones_tec }}</td>
-                    <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                        <div style="overflow-x: auto; white-space: nowrap;">
-                            {{ alumno_info.sello_seduzac }}
-                        </div>
-                    </td>
+                    {% else %}
+                    <td>Sin observaciones</td>
+                    {% endif %}
+                    {% if alumno_info.sello_seduzac %}
+                        <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                            <div style="overflow-x: auto; white-space: nowrap;">
+                                {{ alumno_info.sello_seduzac }}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td>Sin Sello</td>
+                    {% endif %}
+                    {% if alumno_info.fecha_certificacion %}
                     <td>{{ alumno_info.fecha_certificacion }}</td>
+                    {% else %}
+                    <td>Sin fecha</td>
+                    {% endif %}
                     <td>{{ alumno_info.bachillerato }}</td>
-                    <td>{{ alumno_info.certificacion }}</td>
                     <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
                         <div style="overflow-x: auto; white-space: nowrap;">
                             {{ alumno_info.autoridad_educativa }}

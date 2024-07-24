@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrosPorEscuelaForm, LetraFoliadorForm
 from django.db import connections
-from .utils import api_firma, fecha_a_texto, reiniciar_secuencia_folio
+from .utils import api_firma, fecha_a_texto
 from datetime import datetime
 import json
-from .models import FolioLetraPE, FolioSequencePE
+from ConfiguracionApp.models import FolioLetra, FolioSequence
 from FirmaSeduzac.settings import LETRA_FOLIO_TB
+from ConfiguracionApp.models import AutoridadEducativa
 
-def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, periodo):
+def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, periodo, nombre_autoridad, certificado_autoridad):
     query = (
         "SELECT a.cve_alumno AS id_hist_estudio, "
         "a.curp, 0 AS id_proceso, NULL AS certificado_digital, 0 AS estatus_foto, 0 AS estatus_certificado, "
@@ -17,7 +18,7 @@ def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, p
         "TRIM(REPLACE(a.apm_alumno, CHAR(9), ' ')) AS seg_apellido, TRIM(REPLACE(a.nom_alumno, CHAR(9), ' ')) AS nombre, a.promedio, "
         "%s AS fecha_cert, NULL AS fecha_cert_texto, 3 AS tipo_cert, 32 AS entidad, '000' AS cve_mun, s.municipio AS nom_municipio, "
         "NULL AS observaciones_tec, NULL AS sello_seduzac, %s AS fecha_certificacion, 'BACHILLERATO GENERAL' AS bachillerato, 'CERTIFICADO' AS certificacion, "
-        "'MARIBEL VILLALPANDO HARO. SECRETARIA DE EDUCACIÓN DEL ESTADO DE ZACATECAS.' AS autoridad_educativa, '00000000000000008682' AS certificado_autoridad_educativa "
+        "%s AS autoridad_educativa, %s AS certificado_autoridad_educativa "
         "FROM alumnos a "
         "JOIN escuela_bachillerato e ON e.cve_bach_ct = a.cve_bach_ct "
         "JOIN escuelas s ON s.clave_ct = e.clave_ct "
@@ -27,7 +28,7 @@ def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, p
         "AND a.periodo_s6 = %s "
         "AND a.cve_alumno NOT IN (SELECT f.cve_alumno FROM calificaciones f WHERE f.cve_alumno=a.cve_alumno AND (f.calificacion<6 OR f.ban_acreditada='X'));"
     )
-    cursor.execute(query, (fecha_cert, fecha_certificacion, clave, periodo))
+    cursor.execute(query, (fecha_cert, fecha_certificacion, nombre_autoridad, certificado_autoridad, clave, periodo))
     columnas = [col[0] for col in cursor.description]
     resultados = cursor.fetchall()
     return [dict(zip(columnas, fila)) for fila in resultados]
@@ -139,7 +140,7 @@ def datos_foliar(cursor, curp):
 
 def foliar_certificado_prepas(cursor, clavecct, curp):
     try:
-        foliador_prepa = FolioLetraPE.objects.latest('id')
+        foliador_prepa = FolioLetra.objects.latest('id')
     except:
         foliador_prepa = 'A'
 
@@ -150,7 +151,7 @@ def foliar_certificado_prepas(cursor, clavecct, curp):
     elif(clave == 'ETK'):
         foliador = LETRA_FOLIO_TB
 
-    folio_sequence = FolioSequencePE.objects.create()
+    folio_sequence = FolioSequence.objects.create()
     folio_id = folio_sequence.id
 
     folio = f'{foliador}{str(folio_id).zfill(4)}'
@@ -181,7 +182,10 @@ def por_escuela(request):
                 fecha_cert = form_registros.cleaned_data['fecha_certificacion']
                 fecha_certificacion = form_registros.cleaned_data['fecha_certificacion']
                 periodo = form_registros.cleaned_data['periodo']
-                resultados = obtener_registros_insertar(cursor, clave_ct, fecha_cert, fecha_certificacion, periodo)
+                autoridad = AutoridadEducativa.objects.latest('id')
+                nombre_autoridad = autoridad.nombre_autoridad
+                certificado_autoridad = autoridad.certificado_autoridad
+                resultados = obtener_registros_insertar(cursor, clave_ct, fecha_cert, fecha_certificacion, periodo, nombre_autoridad, certificado_autoridad)
 
                 if('obtener_registros' in request.POST):
                     if(resultados):
@@ -224,16 +228,16 @@ def por_escuela(request):
         'datos_foliar':datos_foliador,
         })
 
-def reiniciar_foliador_pe(request):
-    mensaje = None
-    letra_form = LetraFoliadorForm(request.POST or None)
-    if(request.method == 'POST'):
-        if(letra_form.is_valid()):
-            letra_foliador = letra_form.cleaned_data['letra_foliador'].upper()
-            FolioLetraPE.objects.all().delete()
-            FolioLetraPE.objects.create(letra=letra_foliador)
-            reiniciar_secuencia_folio()
-            mensaje = f'Foliador restablecido: Letra nueva: {letra_foliador}, Secuencia restablecida a 1'
+# def reiniciar_foliador_pe(request):
+#     mensaje = None
+#     letra_form = LetraFoliadorForm(request.POST or None)
+#     if(request.method == 'POST'):
+#         if(letra_form.is_valid()):
+#             letra_foliador = letra_form.cleaned_data['letra_foliador'].upper()
+#             FolioLetraPE.objects.all().delete()
+#             FolioLetraPE.objects.create(letra=letra_foliador)
+#             reiniciar_secuencia_folio()
+#             mensaje = f'Foliador restablecido: Letra nueva: {letra_foliador}, Secuencia restablecida a 1'
 
-    return render(request,"reiniciar_foliador_pe.html",{'letra_form':letra_form, 'mensaje':mensaje})
+#     return render(request,"reiniciar_foliador_pe.html",{'letra_form':letra_form, 'mensaje':mensaje})
 

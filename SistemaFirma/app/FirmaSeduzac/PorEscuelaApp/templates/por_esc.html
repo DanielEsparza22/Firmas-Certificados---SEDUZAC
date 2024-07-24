@@ -1,20 +1,22 @@
 {% extends "base2.html" %}
 
-{% block title %}
+{% block titulo %}
     Por Escuela
-{% endblock title %}
+{% endblock titulo %}
 
 {% block content %}
 
 <body>
-  <h2>Certificaciones Por Escuela</h2>
+  <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+    <h2>Certificaciones Por Escuela</h2>
+</section>
   <!-- Sección para obtner registros e insertar -->
   {% include "registros_insertarPE.html" %}
   <!-- Sección para obtner foliar despues de firmar -->
   {% if seccion_foliar %}
     {% include "foliadorCP.html" %}
   {% endif %}
-  <a href="{% url 'reiniciar_foliador_pe' %}" class="btn btn-info">Reiniciar Foliador</a>
+  {% comment %} <a href="{% url 'reiniciar_foliador_pe' %}" class="btn btn-info">Reiniciar Foliador</a> {% endcomment %}
 </body>
 </html>
 {% endblock %}

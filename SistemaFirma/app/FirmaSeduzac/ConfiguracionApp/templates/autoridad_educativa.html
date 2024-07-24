@@ -1,0 +1,27 @@
+{% extends "base2.html" %}
+
+{% block title %}
+    Reiniciar Foliador
+{% endblock title %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Configuración</h2>
+    </section>
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Actualizar Autoridad Educativa</h3>
+        <form method="post" style="width: 100%;">
+            {% csrf_token %}
+            <div>
+                {{ autoridad_form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-top: 10px;">Guardar</button>
+        </form>
+    </section>
+    {% if mensaje %}
+    <p class="alert alert-success" style="width:50%; margin-top:10px">{{ mensaje }}</p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

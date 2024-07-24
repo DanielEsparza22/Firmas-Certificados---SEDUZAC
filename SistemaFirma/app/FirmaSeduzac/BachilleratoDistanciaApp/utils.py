@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from .models import FolioSequenceBD
 
+# Función que consume la api para generar firma
 def api_firma(rfc, documento, sistema, cadena):
     url = "http://api-firma.k8.seduzac.gob.mx/sello-json"
 
@@ -23,6 +24,7 @@ def api_firma(rfc, documento, sistema, cadena):
 
     return response.text
 
+# Función que convierte una fecha en formato yyy/mm/dd a texto
 def fecha_a_texto(fecha_str):
     meses = {
         1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril', 5: 'mayo', 6: 'junio',
@@ -54,9 +56,10 @@ def fecha_a_texto(fecha_str):
     resultado = f"{dia_texto} días del mes de {mes_texto} del año {anio_texto}"
     return resultado
 
-def reiniciar_secuencia_folio():
-    with connection.cursor() as cursor:
-        FolioSequenceBD.objects.all().delete()
+# # Función que permite reiniciar la secuencia numerica del folio para Bachillerato a Distancia
+# def reiniciar_secuencia_folio():
+#     with connection.cursor() as cursor:
+#         FolioSequenceBD.objects.all().delete()
 
-        cursor.execute("ALTER TABLE BachilleratoDistanciaApp_foliosequencebd AUTO_INCREMENT = 1;")
+#         cursor.execute("ALTER TABLE BachilleratoDistanciaApp_foliosequencebd AUTO_INCREMENT = 1;")
 

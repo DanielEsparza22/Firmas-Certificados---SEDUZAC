@@ -62,9 +62,44 @@ def fecha_a_texto(fecha_str):
     resultado = f"{dia_texto} días del mes de {mes_texto} del año {anio_texto}"
     return resultado
 
-def reiniciar_secuencia_folio():
-    with connection.cursor() as cursor:
-        FolioSequenceCP.objects.all().delete()
+# def reiniciar_secuencia_folio():
+#     with connection.cursor() as cursor:
+#         FolioSequenceCP.objects.all().delete()
 
-        cursor.execute("ALTER TABLE CertificacionesParcialesApp_foliosequencecp AUTO_INCREMENT = 1;")
+#         cursor.execute("ALTER TABLE CertificacionesParcialesApp_foliosequencecp AUTO_INCREMENT = 1;")
+
+def numero_a_texto(n):
+    if not (0 <= n <= 99):
+        return "Número fuera de rango"
+
+    unidades = [
+        "cero", "uno", "dos", "tres", "cuatro", "cinco",
+        "seis", "siete", "ocho", "nueve", "diez", "once",
+        "doce", "trece", "catorce", "quince", "dieciséis",
+        "diecisiete", "dieciocho", "diecinueve"
+    ]
+
+    decenas = [
+        "", "", "veinte", "treinta", "cuarenta",
+        "cincuenta", "sesenta", "setenta", "ochenta", "noventa"
+    ]
+
+    if n < 20:
+        return unidades[n]
+
+    if n < 30:
+        if n == 20:
+            return decenas[2]
+        else:
+            return "veinti" + unidades[n % 10]
+
+    decena = n // 10
+    unidad = n % 10
+
+    if unidad == 0:
+        return decenas[decena]
+    elif unidad == 1:
+        return decenas[decena] + " y un"
+    else:
+        return decenas[decena] + " y " + unidades[unidad]
         

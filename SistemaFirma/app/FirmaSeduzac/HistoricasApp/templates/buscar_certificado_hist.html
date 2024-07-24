@@ -1,0 +1,121 @@
+<section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+    <h3>Verificar Certificado</h3>
+    <form method="post" style="width: 100%;">
+        {% csrf_token %}
+        <div style="display: flex; align-items: center;">
+            <div>
+                <label for="id_curp">CURP del Alumno:</label>
+                {{ form.curp }}
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-left: 10px; margin-top: 30px">Enviar</button>
+        </div>
+    {% if alumno_info %}
+        <h3>Certificado</h3>
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <tr>
+                    <th>CURP</th>
+                    <th>Estatus Certificado</th>
+                    <th>Folio SEP</th>
+                    <th>Nombre CT</th>
+                    <th>Clave CT</th>
+                    <th>Primer Apellido</th>
+                    <th>Segundo Apellido</th>
+                    <th>Nombre</th>
+                    <th>Promedio</th>
+                    <th>Fecha de Certificado</th>
+                    <th>Observaciones</th>
+                    <th style="text-align:center">Sello SEDUZAC</th>
+                    <th>Fecha Certificación</th>
+                    <th>Bachillerato</th>
+                    <th>Autoridad Educativa</th>
+                    <th>Certificado Autoridad Educativa</th>
+                </tr>
+                <tr>
+                    <td>{{ alumno_info.curp }}</td>
+                    {% if alumno_info.estatus_certificado == 1 %}
+                        <td>Firmado</td>
+                    {% elif alumno_info.estatus_certificado == 0 %}
+                        <td>Por Firmar</td>
+                    {% elif alumno_info.estatus_certificado == 2 %}
+                        <td>Firmado SEP</td>
+                    {% elif alumno_info.estatus_certificado == 3 %}
+                        <td>Cancelado</td>
+                    {% elif alumno_info.estatus_certificado == 4 %}
+                        <td>Impreso</td>
+                    {% elif alumno_info.estatus_certificado == 5 %}
+                        <td>Para Cancelar</td>
+                    {% elif alumno_info.estatus_certificado == 103 %}
+                        <td>Validada</td>
+                    {% elif alumno_info.estatus_certificado == 100 %}
+                        <td>Inicial Feria de Servicios</td>
+                    {% elif alumno_info.estatus_certificado == 101 %}
+                        <td>Procesando</td>
+                    {% elif alumno_info.estatus_certificado == 102 %}
+                        <td>No se encontró información</td>
+                    {% endif %}
+                    {% if alumno_info.folio_sep %}
+                        <td>{{ alumno_info.folio_sep }}</td>
+                    {% else %}
+                        <td>Sin Folio</td>
+                        {% endif %}
+                    <td>{{ alumno_info.nombre_ct }}</td>
+                    <td>{{ alumno_info.clavecct }}</td>
+                    <td>{{ alumno_info.prim_apellido }}</td>
+                    <td>{{ alumno_info.seg_apellido }}</td>
+                    <td>{{ alumno_info.nombre }}</td>
+                    {% if alumno_info.promedio %}
+                    <td>{{ alumno_info.promedio }}</td>
+                    {% else %}
+                    <td>Sin Promedio</td>
+                    {% endif %}
+                    <td>{{ alumno_info.fecha_cert }}</td>
+                    {% if alumno_info.observaciones_tec %}
+                    <td>{{ alumno_info.observaciones_tec }}</td>
+                    {% else %}
+                    <td>Sin observaciones</td>
+                    {% endif %}
+                    {% if alumno_info.sello_seduzac %}
+                        <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                            <div style="overflow-x: auto; white-space: nowrap;">
+                                {{ alumno_info.sello_seduzac }}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td>Sin Sello</td>
+                    {% endif %}
+                    {% if alumno_info.fecha_certificacion %}
+                    <td>{{ alumno_info.fecha_certificacion }}</td>
+                    {% else %}
+                    <td>Sin fecha</td>
+                    {% endif %}
+                    {% if alumno_info.bachillerato %}
+                    <td>{{ alumno_info.bachillerato }}</td>
+                    {% else %}
+                    <td>Sin Bachillerato</td>
+                    {% endif %}
+                    <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                        <div style="overflow-x: auto; white-space: nowrap;">
+                            {{ alumno_info.autoridad_educativa }}
+                        </div>
+                    </td>
+                    <td>{{ alumno_info.certificado_autoridad_educativa }}</td>
+                </tr>
+            </table>
+        </div>
+        {% if boton_firmar %}
+        <button type="submit" name="firmar" value="firmar" class="btn btn-success" style="margin-top: 30px;">
+            Firmar
+        </button>
+        {% endif %}
+    </form>
+    {% elif error %}
+        <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error }}</p>
+    {% endif %}
+    {% if mensaje_firma %}
+        <p class="alert alert-success" style="width:25%; margin-top:10px">{{ mensaje_firma }}</p>
+    {% endif %}
+    {% if error_clave %}
+        <p class="alert alert-danger" style="width:25%; margin-top:10px">{{ error_clave }}</p>
+    {% endif %}
+</section>

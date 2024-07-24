@@ -1,0 +1,106 @@
+{% extends "base2.html" %}
+
+{% block title %}
+    Firmar y Foliar Certificados
+{% endblock title %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Firmar Certificados</h2>
+    </section>
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="margin-left: auto;">
+                <i class="bi bi-x-circle-fill"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Listado de Certificados sin Firmar</h3>
+        <div style="overflow-x: auto;">
+            <form method="post" action="">
+                {% csrf_token %}
+                {% if registros %}
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; text-align: left;">
+                    <thead style="background-color: #f2f2f2;">
+                        <tr>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">CURP</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Estatus Certificado</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Tipo Certificado</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Folio SEP</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Clave CT</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Primer Apellido</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Segundo Apellido</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Nombre</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;">Promedio</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;" class="center-text">Sello SEDUZAC</th>
+                            <th style="padding: 10px 12px; border: 1px solid #ddd;" class="center-text">
+                                Seleccionar
+                                <p style="text-align:center"><input type="checkbox" id="select_todos" name="select_todos"></p>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in registros %}
+                        <tr>
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.1 }}</td>
+                            {% if registro.3 == 1 %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">Firmado</td>
+                            {% elif registro.3 == 0 %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">Sin Firmar</td>
+                            {% endif %}
+                            {% if registro.11 == "alumno_certificado" %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">Certificado Total</td>
+                            {% elif registro.11 == "alumno_cert_parcial" %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">Certificado Parcial</td>
+                            {% endif %}
+                            {% if registro.10 %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.10 }}</td>
+                            {% else %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">Sin Folio</td>
+                            {% endif %}
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.4 }}</td>
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.5 }}</td>
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.6 }}</td>
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.7 }}</td>
+                            <td style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.8 }}</td>
+                            {% if registro.9 %}
+                            <td class="center-text" style="padding: 10px 12px; border: 1px solid #ddd;">{{ registro.9 }}</td>
+                            {% else %}
+                            <td class="center-text" style="padding: 10px 12px; border: 1px solid #ddd;">Sin sello</td>
+                            {% endif %}
+                            <td class="center-text" style="padding: 10px 12px; border: 1px solid #ddd; text-align: center; vertical-align: middle;"> 
+                                <input type="checkbox" class="select_registro" name="select_registro" value="{{ registro.1 }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" name="firmar_foliar" value="firmar_foliar" class="btn btn-success" style="margin-top: 30px;">Firmar y Foliar</button>
+                {% else %}
+                <tr>
+                    <td colspan="32">No se encontraron registros.</td>
+                </tr>
+                {% endif %}
+            </form>
+        </div>
+    </section>
+</body>
+    </section>
+</body>
+<script>
+    document.getElementById('select_todos').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.select_registro');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = document.getElementById('select_todos').checked;
+        });
+    });
+</script>
+</html>
+{% endblock %}

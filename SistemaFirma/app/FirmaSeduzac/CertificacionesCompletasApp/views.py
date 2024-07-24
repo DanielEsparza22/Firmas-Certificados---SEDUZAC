@@ -1,15 +1,31 @@
+import os
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import connection, connections
-from .forms import CertificacionCForm, RegistrosCompletasForm, LetraFoliadorForm
+from .forms import CertificacionCForm, RegistrosCompletasForm, FormFiltroCertificadosT
 from datetime import datetime
-from .utils import api_firma, fecha_a_texto, reiniciar_secuencia_folio
+from .utils import api_firma, fecha_a_texto, numero_a_texto
 import json
-from FirmaSeduzac.settings import LETRA_FOLIO_TB
-from .models import FolioLetraCC, FolioSequenceCC
+from FirmaSeduzac.settings import LETRA_FOLIO_TB, LETRA_FOLIO_BACHILLERATO_DISTANCIA
+from ConfiguracionApp.models import FolioSequence, FolioLetra
 from django.contrib import messages
+from ConfiguracionApp.models import AutoridadEducativa
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import io
+from reportlab.lib.units import inch
+from FirmaSeduzac import settings
+import textwrap
+from reportlab.platypus import Table, TableStyle, Paragraph, Frame, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+import qrcode
+from .pdf_totales import pdf_totales
+
 
 def verificar_certificado(cursor, curp):
+    # Consultar alumno_certificado
     query = "SELECT * FROM alumno_certificado WHERE curp = %s"
     cursor.execute(query, [curp])
     result = cursor.fetchone()
@@ -21,25 +37,32 @@ def verificar_certificado(cursor, curp):
                          'prim_apellido', 'seg_apellido', 'nombre', 'promedio', 
                          'fecha_cert', 'fecha_cert_texto', 'tipo_cert', 'entidad', 
                          'cv_mun', 'nom_mun', 'observaciones_tec', 'sello_seduzac', 
-                         'fecha_certificacion', 'bachillerato', 'certificacion', 
+                         'fecha_certificacion', 'bachillerato', 'semestre', 
                          'autoridad_educativa', 'certificado_autoridad_educativa'], result))
     else:
         return None
     
-def obtener_clave_alumno(cursor, curp):
-    query = ("SELECT * FROM alumnos WHERE curp = %s;")
+def obtener_datos_alumno(cursor, curp):
+    query = ("SELECT a.curp, a.app_alumno, a.apm_alumno, a.nom_alumno, e.clave_ct, a.alumno_estatus FROM alumnos a JOIN escuela_bachillerato e "
+             "ON e.cve_bach_ct = a.cve_bach_ct WHERE curp = %s;")
     cursor.execute(query, [curp])
     clave = cursor.fetchone()
     if clave:
-        return dict(zip(['cve_alumno', 'curp', 'matricula', 'generacion', 'nom_alumno', 'app_alumno', 
-                         'apm_alumno', 'sexo', 'cve_bach_ct', 'periodo_s1', 'periodo_s2', 'periodo_s3', 'periodo_s4',
-                          'periodo_s5', 'periodo_s6', 'promedio', 'alumno_estatus', 'folio', 'grupo', 'semestre',
-                           'fecha_nac', 'direccion', 'edo_nac', 'num', 'interior', 'colonia',  'cp', 'municipio',
-                            'localidad',  'estado', 'cve_form_prop', 'fecha_creacion'], clave))
+        return dict(zip(['curp','app_alumno','apm_alumno','nom_alumno','clave_ct','alumno_estatus'], clave))
+    else:
+        return None
+
+def obtener_clave_alumno(cursor, curp):
+    query = ("SELECT cve_alumno FROM alumnos WHERE curp = %s;")
+    cursor.execute(query, [curp])
+    clave = cursor.fetchone()
+    if clave:
+        # print(f'CLAVE:{clave}')
+        return clave
     else:
         return None
     
-def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, bachillerato):
+def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, bachillerato, nombre_autoridad, certificado_autoridad):
     query = (
         "SELECT a.cve_alumno AS id_hist_estudio, "
         "a.curp, 0 AS id_proceso, NULL AS certificado_digital, 0 AS estatus_foto, 0 AS estatus_certificado, "
@@ -48,7 +71,7 @@ def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, b
         "TRIM(REPLACE(a.apm_alumno, CHAR(9), ' ')) AS seg_apellido, TRIM(REPLACE(a.nom_alumno, CHAR(9), ' ')) AS nombre, a.promedio, "
         "%s AS fecha_cert, NULL AS fecha_cert_texto, 3 AS tipo_cert, 32 AS entidad, '000' AS cve_mun, s.municipio AS nom_municipio, "
         "NULL AS observaciones_tec, NULL AS sello_seduzac, %s AS fecha_certificacion, %s AS bachillerato, a.semestre, a.periodo_s6, 'CERTIFICACION' AS certificacion, "
-        "'MARIBEL VILLALPANDO HARO. SECRETARIA DE EDUCACIÓN DEL ESTADO DE ZACATECAS.' AS autoridad_educativa, '00000000000000008682' AS certificado_autoridad_educativa "
+        "%s AS autoridad_educativa, %s AS certificado_autoridad_educativa "
         "FROM alumnos a "
         "JOIN escuela_bachillerato e ON e.cve_bach_ct = a.cve_bach_ct "
         "JOIN escuelas s ON s.clave_ct = e.clave_ct "
@@ -58,7 +81,7 @@ def obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, b
         "AND a.periodo_s6 IS NOT NULL "
         "AND a.cve_alumno NOT IN(SELECT f.cve_alumno FROM calificaciones f WHERE f.cve_alumno = a.cve_alumno AND (f.calificacion<6 OR f.ban_acreditada='X'))"
     )
-    cursor.execute(query, (fecha_cert, fecha_certificacion, bachillerato, clave))
+    cursor.execute(query, (fecha_cert, fecha_certificacion, bachillerato, nombre_autoridad, certificado_autoridad, clave))
     columnas = [col[0] for col in cursor.description]
     resultados = cursor.fetchall()
     return [dict(zip(columnas, fila)) for fila in resultados]
@@ -167,20 +190,22 @@ def datos_foliar(cursor, curp):
     # print(registros_folio)
     return registros_folio
 
-def foliar_certificado_prepas(cursor, clavecct, curp):
+def foliar_certificado_prepas(cursor, clavecct, curp, nombre_ct):
     try:
-        foliador_prepa = FolioLetraCC.objects.latest('id')
+        foliador_prepa = FolioLetra.objects.latest('id')
     except:
         foliador_prepa = 'A'
 
     clave = clavecct[2:5]
     foliador = None
-    if(clave == 'EBH' or 'PBH'):
+    if((clave == 'EBH' or clave == 'PBH') and nombre_ct != 'BACHILLERATO A DISTANCIA'):
         foliador = foliador_prepa
     elif(clave == 'ETK'):
         foliador = LETRA_FOLIO_TB
+    elif(clave == 'EBH' and nombre_ct == 'BACHILLERATO A DISTANCIA'):
+        foliador = LETRA_FOLIO_BACHILLERATO_DISTANCIA
 
-    folio_sequence = FolioSequenceCC.objects.create()
+    folio_sequence = FolioSequence.objects.create()
     folio_id = folio_sequence.id
 
     folio = f'{foliador}{str(folio_id).zfill(4)}'
@@ -204,10 +229,9 @@ def certificaciones_completas(request):
     registros_insertar = None
     error_registros_insertar = None
     boton_enviar_datos = True
-    boton_firmar = False
-    mensaje_firma = None
-    seccion_foliador = False
-    datos_foliador = None
+    datos_alumno = None
+    seccion_datos = None
+    seccion_guardar = None
 
     if (request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
@@ -215,48 +239,55 @@ def certificaciones_completas(request):
                 curp = form.cleaned_data['curp'].upper()
                 request.session['curp'] = curp #Aqui guardo la curp en la sesion
                 alumno_info = verificar_certificado(cursor, curp)
-                clave_info = obtener_clave_alumno(cursor, curp)
+                datos_alumno = obtener_datos_alumno(cursor, curp)
                 
-                if not alumno_info:
-                    error = "No se encontró el certificado"
-                if not clave_info:
+                if (not alumno_info):
+                    error = "Este alumno no cuenta con certificado"
+                    seccion_datos = True
+                    seccion_guardar = True
+                else:
+                    seccion_datos = False
+                    seccion_guardar = False
+                if (not clave_info):
                     error_clave = "No se encontró la clave del alumno"
             if(form_registros.is_valid()):
-                clave = form_registros.cleaned_data['clave_alumno']
+                curp = request.session.get('curp', None) #Recupero la curp de la sesion
+                clave = obtener_clave_alumno(cursor,curp)
                 fecha_cert = form_registros.cleaned_data['fecha_certificacion']
                 fecha_certificacion = form_registros.cleaned_data['fecha_certificacion']
                 bachillerato = form_registros.cleaned_data['bachillerato'].upper() or "BACHILLERATO GENERAL"
-                resultados = obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, bachillerato)
+                autoridad = AutoridadEducativa.objects.latest('id')
+                nombre_autoridad = autoridad.nombre_autoridad
+                certificado_autoridad = autoridad.certificado_autoridad
+                resultados = obtener_registros_insertar(cursor, clave, fecha_cert, fecha_certificacion, bachillerato, nombre_autoridad, certificado_autoridad)
 
                 if('obtener_registros' in request.POST):
                     if resultados:
                         registros_insertar = resultados
-                    else:
-                        error_registros_insertar = "No se encontraron registros para insertar."
-                elif('insertar_datos' in request.POST):
-                    if(resultados):
                         insertar_registros(cursor, resultados)
-                        mensaje_insercion = "Registro insertado con éxito."
+                        mensaje_insercion = "Datos guardados correctamente."
                         boton_enviar_datos = False
-                        boton_firmar = True
-                elif('firmar' in request.POST):
-                    curp = request.session.get('curp', None) #Recupero la curp de la sesion
-                    if(curp):
-                        valores_cadena = obtener_valores_cadena(cursor, curp)
-                        firmar_certificado(cursor, curp, valores_cadena)
-                        mensaje_firma = "Se firmó correctamente el certificado."
-                        seccion_foliador = True
-                        boton_enviar_datos = False
-                        datos_foliador = datos_foliar(cursor, curp)
-                elif('foliar' in request.POST):
-                    curp = request.session.get('curp', None) #Recupero la curp de la sesion
-                    if(curp):
-                        clave = obtener_clave_cct(cursor, curp)
-                        foliar_certificado_prepas(cursor, clave, curp)
+                    else:
+                        error_registros_insertar = "Error al guardar. Verifique los datos."
+                # elif('firmar' in request.POST):
+                #     curp = request.session.get('curp', None) #Recupero la curp de la sesion
+                #     if(curp):
+                #         valores_cadena = obtener_valores_cadena(cursor, curp)
+                #         firmar_certificado(cursor, curp, valores_cadena)
+                #         mensaje_firma = "Se firmó correctamente el certificado."
+                #         seccion_foliador = True
+                #         boton_enviar_datos = False
+                #         datos_foliador = datos_foliar(cursor, curp)
+                # elif('foliar' in request.POST):
+                #     curp = request.session.get('curp', None) #Recupero la curp de la sesion
+                #     if(curp):
+                #         clave = obtener_clave_cct(cursor, curp)
+                #         foliar_certificado_prepas(cursor, clave, curp)
 
     return render(request, 'cert_compl.html', {
         'form': form,
         'alumno_info': alumno_info,
+        'datos_alumno':datos_alumno,
         'error': error,
         'clave': clave_info,
         'error_clave': error_clave,
@@ -265,24 +296,23 @@ def certificaciones_completas(request):
         'error_registros_insertar': error_registros_insertar,
         'mensaje_insertar': mensaje_insercion,
         'boton_enviar':boton_enviar_datos,
-        'boton_firmar':boton_firmar,
-        'mensaje_firma':mensaje_firma,
-        'seccion_foliar':seccion_foliador,
-        'datos_foliar':datos_foliador,
+        'seccion_guardar':seccion_guardar,
+        'seccion_datos':seccion_datos,
     })
 
-def reiniciar_foliador_cc(request):
-    mensaje = None
-    letra_form = LetraFoliadorForm(request.POST or None)
-    if(request.method == 'POST'):
-        if(letra_form.is_valid()):
-            letra_foliador = letra_form.cleaned_data['letra_foliador'].upper()
-            FolioLetraCC.objects.all().delete()
-            FolioLetraCC.objects.create(letra=letra_foliador)
-            reiniciar_secuencia_folio()
-            mensaje = f'Foliador restablecido: Letra nueva: {letra_foliador}, Secuencia restablecida a 1'
+# Metodo para reinicar filiador individualmente(posible implementacion luego)
+# def reiniciar_foliador_cc(request):
+#     mensaje = None
+#     letra_form = LetraFoliadorForm(request.POST or None)
+#     if(request.method == 'POST'):
+#         if(letra_form.is_valid()):
+#             letra_foliador = letra_form.cleaned_data['letra_foliador'].upper()
+#             FolioLetraCC.objects.all().delete()
+#             FolioLetraCC.objects.create(letra=letra_foliador)
+#             reiniciar_secuencia_folio()
+#             mensaje = f'Foliador restablecido: Letra nueva: {letra_foliador}, Secuencia restablecida a 1'
 
-    return render(request,"reiniciar_foliador_cc.html",{'letra_form':letra_form, 'mensaje':mensaje})
+#     return render(request,"reiniciar_foliador_cc.html",{'letra_form':letra_form, 'mensaje':mensaje})
 
 def registros_sin_firma(cursor):
     query = (
@@ -297,6 +327,16 @@ def registros_sin_firma(cursor):
     # print(registros)
     return registros
 
+# Obtener el nombre ct para foliar los bachilleratos a distancia
+def obtener_nombre_ct(cursor, curp):
+    query = ("SELECT nombre_ct FROM alumno_certificado WHERE curp = %s;")
+
+    cursor.execute(query,[curp])
+    nombre_ct = cursor.fetchone()
+    nombre_ct = nombre_ct[0]
+    
+    # print(f'LETRA: {LETRA_FOLIO}')
+    return nombre_ct
 
 @login_required
 def consultar_registros_no_firma_cc(request):
@@ -312,11 +352,50 @@ def consultar_registros_no_firma_cc(request):
             else:
                 for registro_curp in registros_seleccionados:
                     valores_cadena = obtener_valores_cadena(cursor, registro_curp)
+                    nombre_ct = obtener_nombre_ct(cursor, registro_curp)
                     firmar_certificado(cursor, registro_curp, valores_cadena)
                     clavecct = obtener_clave_cct(cursor,registro_curp)
-                    foliar_certificado_prepas(cursor, clavecct, registro_curp)
+                    foliar_certificado_prepas(cursor, clavecct, registro_curp, nombre_ct)
 
                 messages.success(request, f'Se firmaron y foliaron {num_registros} registros exitosamente')
                 return redirect('consultar_registros_no_firma_cc')
     return render(request,"consultar_registros_cc.html",{'registros':registros})
 
+@login_required
+def consultar_registros_firmados(request):
+    form_filtro = FormFiltroCertificadosT(request.POST or None)
+    registros = None
+
+    if request.method == "POST":
+        if('reset_form' in request.POST):
+            form_filtro = FormFiltroCertificadosT()
+        else:
+            with connections['mariadb'].cursor() as cursor:
+                if(form_filtro.is_valid()):
+                    curp = form_filtro.cleaned_data.get('curp')
+                    fecha = form_filtro.cleaned_data.get('fecha_certificacion')
+                    ct = form_filtro.cleaned_data.get('ct')
+
+                    if(curp):
+                        query2 = ("SELECT ac.curp, ac.bachillerato, ac.fecha_certificacion, a.semestre, ac.clavecct FROM alumno_certificado ac "
+                                  "JOIN alumnos a ON ac.id_hist_estudio = a.cve_alumno WHERE ac.curp = %s AND ac.estatus_certificado = 1")
+                        cursor.execute(query2, [curp])
+                        registros = cursor.fetchall()
+                    elif(fecha):
+                        query2 = ("SELECT ac.curp, ac.bachillerato, ac.fecha_certificacion, a.semestre, ac.clavecct FROM alumno_certificado ac "
+                                  "JOIN alumnos a ON ac.id_hist_estudio = a.cve_alumno WHERE ac.fecha_certificacion = %s")
+                        cursor.execute(query2, [fecha])
+                        registros = cursor.fetchall()
+                    elif(ct):
+                        query2 = ("SELECT ac.curp, ac.bachillerato, ac.fecha_certificacion, a.semestre, ac.clavecct FROM alumno_certificado ac "
+                                  "JOIN alumnos a ON ac.id_hist_estudio = a.cve_alumno WHERE ac.clavecct = %s")
+                        cursor.execute(query2, [ct])
+                        registros = cursor.fetchall()
+
+    return render(request, "registros_firmados_cc.html", {'registros': registros, 'form_filtro': form_filtro})
+
+
+def generar_pdf_ct(request, curp):
+    pdf = pdf_totales(curp)
+
+    return pdf

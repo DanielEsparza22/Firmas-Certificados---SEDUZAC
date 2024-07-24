@@ -1,150 +1,29 @@
 <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
-    <h3>Obtener Registros Para Insertar</h3>
+    <h3>Datos de Certificación</h3>
     <form method="post" style="width: 100%;">
         {% csrf_token %}
-        <div style="display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <div style="flex: 1; margin-right: 10px;">
-                    <label>Clave del Alumno</label>
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    <label>Fecha de Certificación</label>
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    <label>Bachillerato</label>
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    <label>Semestre</label>
-                </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div style="flex: 1; margin-right: 10px;">
+                <label>Fecha de Certificación</label>
+                {{ form_registros.fecha_certificacion }}
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <div style="flex: 1; margin-right: 10px; ">
-                    {{ form_registros.clave_alumno }}
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    {{ form_registros.fecha_certificacion }}
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    {{ form_registros.bachillerato }}
-                </div>
-                <div style="flex: 1; margin-right: 10px;">
-                    {{ form_registros.semestre }}
-                </div>
+            <div style="flex: 1; margin-right: -75px;">
+                <label>Bachillerato</label>
+                {{ form_registros.bachillerato }}
+            </div>
+            <div style="flex: 1; margin-right: 10px;">
+                <label>Semestre</label>
+                {{ form_registros.semestre }}
             </div>
         </div>
         {% if boton_enviar %}
-        <button type="submit" name="obtener_registros" value="obtener_registros" class="btn btn-success" style="margin-top: 30px;">Enviar Datos</button>
+        <button type="submit" name="obtener_registros" value="obtener_registros" class="btn btn-success" style="margin-top: 30px;">
+            <i class="bi bi-floppy"></i>
+            Guardar Datos
+        </button>
         {% endif %}
-    {% if registros_info %}
-    <hr>
-    <h3>Registros</h3>
-    <div style="overflow-x: auto;">
-        <table class="table">
-            <tr>
-                <th>ID Historial de Estudio</th>
-                <th>CURP</th>
-                <th>ID Proceso</th>
-                <th>Certificado Digital</th>
-                <th>Estatus Foto</th>
-                <th>Estatus Certificado</th>
-                <th>Fecha de Creación</th>
-                <th>Fecha de Firma</th>
-                <th>Sello SEP</th>
-                <th>Fecha de Sello SEP</th>
-                <th>Folio SEP</th>
-                <th>ID Genero CT</th>
-                <th>Nombre CT</th>
-                <th>Clave CCT</th>
-                <th>Nivel CT</th>
-                <th>Primer Apellido</th>
-                <th>Segundo Apellido</th>
-                <th>Nombre</th>
-                <th>Promedio</th>
-                <th>Fecha de Certificado</th>
-                <th>Fecha de Certificado en Texto</th>
-                <th>Tipo Certificado</th>
-                <th>Entidad</th>
-                <th>Clave Municipio</th>
-                <th>Nombre Municipio</th>
-                <th>Observaciones</th>
-                <th style="text-align:center">Sello SEDUZAC</th>
-                <th>Fecha Certificación</th>
-                <th>Bachillerato</th>
-                <th>Semestre</th>
-                <th>Autoridad Educativa</th>
-                <th>Certificado Autoridad Educativa</th>
-            </tr>
-            {% if registros_info %}
-            {% for registro in registros_info %}
-            <tr>
-                <td>{{ registro.id_hist_estudio }}</td>
-                <td>{{ registro.curp }}</td>
-                <td>{{ registro.id_proceso }}</td>
-                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                    <div style="overflow-x: auto; white-space: nowrap;">
-                        {{ registro.certificado_digital }}
-                    </div>
-                </td>
-                <td>{{ registro.estatus_foto }}</td>
-                <td>{{ registro.estatus_certificado }}</td>
-                <td>{{ registro.fecha_creacion }}</td>
-                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                    <div style="overflow-x: auto; white-space: nowrap;">
-                        {{ registro.fecha_firma }}
-                    </div>
-                </td>
-                <td>{{ registro.sello_sep }}</td>
-                <td>{{ registro.fecha_sello_sep }}</td>
-                <td>{{ registro.folio_sep }}</td>
-                <td>{{ registro.id_genero_ct }}</td>
-                <td>{{ registro.nombre_ct }}</td>
-                <td>{{ registro.clave_ct }}</td>
-                <td>{{ registro.nivel_ct }}</td>
-                <td>{{ registro.prim_apellido }}</td>
-                <td>{{ registro.seg_apellido }}</td>
-                <td>{{ registro.nombre }}</td>
-                <td>{{ registro.promedio }}</td>
-                <td>{{ registro.fecha_cert }}</td>
-                <td>{{ registro.fecha_cert_texto }}</td>
-                <td>{{ registro.tipo_cert }}</td>
-                <td>{{ registro.entidad }}</td>
-                <td>{{ registro.cve_mun }}</td>
-                <td>{{ registro.nom_municipio }}</td>
-                <td>{{ registro.observaciones_tec }}</td>
-                <td>{{ registro.sello_seduzac }}</td>
-                <td>{{ registro.fecha_certificacion }}</td>
-                <td>{{ registro.bachillerato }}</td>
-                <td>{{ registro.semestre }}</td>
-                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                    <div style="overflow-x: auto; white-space: nowrap;">
-                        {{ registro.autoridad_educativa }}
-                    </div>
-                </td>
-                <td>{{ registro.certificado_autoridad_educativa }}</td>
-            </tr>
-            {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="32">No se encontraron registros.</td>
-            </tr>
-        {% endif %}
-    </tbody>
-</table>
-    </div>
-    <button type="submit" name="insertar_datos" value="insertar_datos" class="btn btn-success" style="margin-top: 30px;">Insertar datos</button>
     </form>
-    {% elif error_registros_insertar %}
+    {% if error_registros_insertar %}
     <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error_registros_insertar }}</p>
-    {% endif %}
-    <div style="margin-top: 20px; display: flex; align-items: center;">
-        {% if mensaje_insertar %}
-        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_insertar }}</div>
-        {% endif %}
-        {% if mensaje_firma %}
-        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_firma }}</div>
-        {% endif %}
-        {% if boton_firmar %}
-        <button type="submit" name="firmar" value="firmar" class="btn btn-primary btn-lg" style="margin-left: 20px;">Firmar Certificado</button>
-        {% endif %}
-    </div>    
+    {% endif %} 
 </section>

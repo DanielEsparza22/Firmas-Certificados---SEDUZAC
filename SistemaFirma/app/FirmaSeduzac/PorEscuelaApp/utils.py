@@ -54,8 +54,8 @@ def fecha_a_texto(fecha_str):
     resultado = f"{dia_texto} días del mes de {mes_texto} del año {anio_texto}"
     return resultado
 
-def reiniciar_secuencia_folio():
-    with connection.cursor() as cursor:
-        FolioSequencePE.objects.all().delete()
+# def reiniciar_secuencia_folio():
+#     with connection.cursor() as cursor:
+#         FolioSequencePE.objects.all().delete()
 
-        cursor.execute("ALTER TABLE BachilleratoDistanciaApp_foliosequencebd AUTO_INCREMENT = 1;")
+#         cursor.execute("ALTER TABLE BachilleratoDistanciaApp_foliosequencebd AUTO_INCREMENT = 1;")

@@ -1,0 +1,67 @@
+{% extends "base2.html" %}
+
+{% block titulo %}
+    Certificados Totales
+{% endblock titulo %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Certificaciones Totales</h2>
+    </section>
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Consultar Certificados</h3>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <table style="margin-bottom: 10px;">
+                <tr>
+                    <td>{{ form_filtro.curp }}</td>
+                    <td>{{ form_filtro.fecha_certificacion }}</td>
+                    <td>{{ form_filtro.ct }}</td>
+                    <td><button class="btn btn-primary" type="submit">Buscar</button></td>
+                    <td><button class="btn btn-secondary" name="reset_form" value="reset_form">Limpiar Filtros</button></td>
+                </tr>
+            </table>
+        </form>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th style="padding: 10px; border: 1px solid #ddd;">CURP</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Bachillerato</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Fecha de Certificación</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Semestre</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Clave CT</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Certifiado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if registros %}
+                {% for registro in registros %}
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ registro.0 }}</td>
+                    {% if registro.1 %}
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ registro.1 }}</td>
+                    {% else %}
+                    <td style="padding: 10px; border: 1px solid #ddd;">Sin Bachillerato</td>
+                    {% endif %}
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ registro.2 }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ registro.3 }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ registro.4 }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                        <a href="{% url 'generar_pdf_ct' registro.0 %}" class="btn btn-danger d-inline-flex justify-content-center align-items-center" style="height: 2.2rem;" target="_blank">
+                            <i class="bi bi-file-earmark-pdf" style="font-size: 1.5rem;"></i>
+                        </a>
+                    </td>                    
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6">No se encontraron registros.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>      
+    </section>
+</body>
+{% endblock %}

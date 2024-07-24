@@ -1,24 +1,34 @@
+
 {% extends "base2.html" %}
 
-{% block title %}
-    Certificaciones Completas
-{% endblock title %}
+{% block titulo %}
+    Certificaciones Totales
+{% endblock titulo %}
 
 {% block content %}
 <body>
-    <h2>Certificaciones Completas</h2>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+    <h2>Certificaciones Totales</h2>
+    </section>
     
     <!-- Sección para verificar el certificado -->
     {% include "existe_certificadoCC.html" %}
     <!-- Sección para obtner la clave -->
-    {% include "clave_usuarioCC.html" %}
-    <!-- Sección para insertar registros -->
-    {% include "registros_insertarCC.html" %}
-    <!-- Sección para obtner foliar despues de firmar -->
-    {% if seccion_foliar %}
-        {% include "foliadorCC.html" %}
+    {% if seccion_datos %}
+        {% include "clave_usuarioCC.html" %}
     {% endif %}
-    <a href="{% url 'reiniciar_foliador_cc' %}" class="btn btn-info">Reiniciar Foliador</a>
+    <!-- Sección para insertar registros -->
+    {% if seccion_guardar %}
+        {% include "registros_insertarCC.html" %}
+    {% endif %}
+    <div style="margin-top: 20px; display: flex; align-items: center;">
+        {% if mensaje_insertar %}
+        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_insertar }}</div>
+        {% elif error_registros_insertar %}
+        <div class="alert alert-danger" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ error_registros_insertar }}</div>
+        {% endif %}
+    </div>  
+    {% comment %} <a href="{% url 'reiniciar_foliador_cc' %}" class="btn btn-info">Reiniciar Foliador</a> {% endcomment %}
     
 </body>
 </html>

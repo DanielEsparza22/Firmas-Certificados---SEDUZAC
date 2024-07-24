@@ -1,0 +1,13 @@
+{% extends "base2.html" %}
+
+{% block title %}
+Acceso Denegado
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Acceso Denegado</h1>
+    <p>No tienes permisos para acceder a esta sección. Por favor, contacta al administrador si necesitas acceso.</p>
+    <a href="{% url 'login' %}" class="btn btn-primary">Iniciar sesión con otro usuario</a>
+</div>
+{% endblock %}

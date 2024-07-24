@@ -25,4 +25,9 @@ urlpatterns = [
     path('certificados_parciales/', include('CertificacionesParcialesApp.urls')),
     path('bachillerato_distancia/', include('BachilleratoDistanciaApp.urls')),
     path('por_escuela/', include('PorEscuelaApp.urls')),
+    path('configuracion/', include('ConfiguracionApp.urls')),
+    path('firmar/', include('FirmarApp.urls')),
+    path('certificados_historicos/', include('HistoricasApp.urls')),
 ]
+
+handler403 = 'ConfiguracionApp.views.error_403'

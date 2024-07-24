@@ -1,27 +1,21 @@
 <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
-    <h3>Clave del Alumno</h3>
-    {% if clave %}
+    <h3>Datos del Alumno</h3>
+    {% if datos_alumno %}
     <div style="overflow-x: auto;">
         <table class="table">
             <tr>
-                <th>Clave del Alumno</th>
                 <th>CURP</th>
                 <th>Apellido Paterno</th>
                 <th>Apellido Materno</th>
                 <th>Nombre</th>
-                <th>Semestre</th>
                 <th>Clave CT</th>
-                <th>Estatus del Alumno</th>
             </tr>
             <tr>
-                <td>{{ clave.cve_alumno }}</td>
-                <td>{{ clave.curp }}</td>
-                <td>{{ clave.app_alumno }}</td>
-                <td>{{ clave.apm_alumno }}</td>
-                <td>{{ clave.nom_alumno }}</td>
-                <td>{{ clave.semestre }}</td>
-                <td>{{ clave.clave_ct }}</td>
-                <td>{{ clave.alumno_estatus }}</td>
+                <td>{{ datos_alumno.curp }}</td>
+                <td>{{ datos_alumno.app_alumno }}</td>
+                <td>{{ datos_alumno.apm_alumno }}</td>
+                <td>{{ datos_alumno.nom_alumno }}</td>
+                <td>{{ datos_alumno.clave_ct }}</td>
             </tr>
         </table>
     </div>
