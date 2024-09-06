@@ -11,7 +11,9 @@
     </section>
     
     <!-- Sección para verificar el certificado -->
+    {% if seccion_verificar %}
         {% include "existe_certificadoCP.html" %}
+    {% endif %}
     <!-- Sección para obtner la clave -->
     {% if seccion_datos %}
         {% include "clave_usuarioCP.html" %}
@@ -20,11 +22,18 @@
     {% if seccion_guardar %}
         {% include "registros_insertarCP.html" %}
     {% endif %}
-    <div style="margin-top: 20px; display: flex; align-items: center;">
+    <div style="margin-top: 20px; display: flex; align-items: center; flex-direction: column;">
         {% if mensaje_insertar %}
-        <div class="alert alert-success" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ mensaje_insertar }}</div>
+        <div class="alert alert-success" style="margin-bottom: 0; max-width: 30%; width: 100%;">{{ mensaje_insertar }}</div>
+        <div style="margin-top: 10px; font-size: 1.1em; color: #555; max-width: 30%; width: 100%; text-align:center;">
+            <strong>NOTA:</strong> NO SE HA FIRMADO EL CERTIFICADO, PARA FIRMARLO DIRÍJASE A LA SECCIÓN DE 
+            <a href="{% url 'firmar' %}"><b>FIRMAR Y FOLIAR</b></a>.
+        </div>
+        <div style="margin-top: 10px; font-size: 1em; max-width: 30%; width: 100%; text-align:center;">
+            <b>Si desea agregar datos de otro alumno, haga clic <a href="{% url 'certificaciones_parciales' %}">aquí</a>.</b>
+        </div>
         {% elif error_registros_insertar %}
-        <div class="alert alert-danger" style="margin-bottom: 0; flex: 1 0 auto; max-width: 30%;">{{ error_registros_insertar }}</div>
+        <div class="alert alert-danger" style="margin-bottom: 0; max-width: 30%; width: 100%;">{{ error_registros_insertar }}</div>
         {% endif %}
     </div>   
     {% comment %} <a href="{% url 'reiniciar_foliador_cp' %}" class="btn btn-info">Reiniciar Foliador</a> {% endcomment %}

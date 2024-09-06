@@ -11,16 +11,6 @@ from FirmaSeduzac.settings import LETRA_FOLIO_TB, LETRA_FOLIO_BACHILLERATO_DISTA
 from ConfiguracionApp.models import FolioSequence, FolioLetra
 from django.contrib import messages
 from ConfiguracionApp.models import AutoridadEducativa
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-import io
-from reportlab.lib.units import inch
-from FirmaSeduzac import settings
-import textwrap
-from reportlab.platypus import Table, TableStyle, Paragraph, Frame, Spacer
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-import qrcode
 from .pdf_totales import pdf_totales
 
 
@@ -29,7 +19,7 @@ def verificar_certificado(cursor, curp):
     query = "SELECT * FROM alumno_certificado WHERE curp = %s"
     cursor.execute(query, [curp])
     result = cursor.fetchone()
-    if result:
+    if(result):
         return dict(zip(['id_hist_estudio', 'curp', 'id_proceso', 'certificado_digital', 
                          'estatus_foto', 'estatus_certificado', 'fecha_creacion', 
                          'fecha_firma', 'sello_sep', 'fecha_sello_sep', 'folio_sep', 
@@ -47,7 +37,7 @@ def obtener_datos_alumno(cursor, curp):
              "ON e.cve_bach_ct = a.cve_bach_ct WHERE curp = %s;")
     cursor.execute(query, [curp])
     clave = cursor.fetchone()
-    if clave:
+    if(clave):
         return dict(zip(['curp','app_alumno','apm_alumno','nom_alumno','clave_ct','alumno_estatus'], clave))
     else:
         return None
@@ -56,7 +46,7 @@ def obtener_clave_alumno(cursor, curp):
     query = ("SELECT cve_alumno FROM alumnos WHERE curp = %s;")
     cursor.execute(query, [curp])
     clave = cursor.fetchone()
-    if clave:
+    if(clave):
         # print(f'CLAVE:{clave}')
         return clave
     else:
@@ -232,6 +222,7 @@ def certificaciones_completas(request):
     datos_alumno = None
     seccion_datos = None
     seccion_guardar = None
+    seccion_verificar = True
 
     if (request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
@@ -242,20 +233,20 @@ def certificaciones_completas(request):
                 datos_alumno = obtener_datos_alumno(cursor, curp)
                 
                 if (not alumno_info):
-                    error = "Este alumno no cuenta con certificado"
+                    error = "Este alumno no cuenta con certificado."
                     seccion_datos = True
                     seccion_guardar = True
                 else:
                     seccion_datos = False
                     seccion_guardar = False
                 if (not clave_info):
-                    error_clave = "No se encontró la clave del alumno"
+                    error_clave = "No se encontró la clave del alumno."
             if(form_registros.is_valid()):
                 curp = request.session.get('curp', None) #Recupero la curp de la sesion
                 clave = obtener_clave_alumno(cursor,curp)
                 fecha_cert = form_registros.cleaned_data['fecha_certificacion']
                 fecha_certificacion = form_registros.cleaned_data['fecha_certificacion']
-                bachillerato = form_registros.cleaned_data['bachillerato'].upper() or "BACHILLERATO GENERAL"
+                bachillerato = form_registros.cleaned_data['bachillerato']
                 autoridad = AutoridadEducativa.objects.latest('id')
                 nombre_autoridad = autoridad.nombre_autoridad
                 certificado_autoridad = autoridad.certificado_autoridad
@@ -265,10 +256,11 @@ def certificaciones_completas(request):
                     if resultados:
                         registros_insertar = resultados
                         insertar_registros(cursor, resultados)
-                        mensaje_insercion = "Datos guardados correctamente."
+                        mensaje_insercion = "Los datos del alumno se guardaron con éxito."
                         boton_enviar_datos = False
+                        seccion_verificar = False
                     else:
-                        error_registros_insertar = "Error al guardar. Verifique los datos."
+                        error_registros_insertar = "Error al guardar los datos del alumno. Verifique la información."
                 # elif('firmar' in request.POST):
                 #     curp = request.session.get('curp', None) #Recupero la curp de la sesion
                 #     if(curp):
@@ -298,6 +290,7 @@ def certificaciones_completas(request):
         'boton_enviar':boton_enviar_datos,
         'seccion_guardar':seccion_guardar,
         'seccion_datos':seccion_datos,
+        'seccion_verificar':seccion_verificar,
     })
 
 # Metodo para reinicar filiador individualmente(posible implementacion luego)

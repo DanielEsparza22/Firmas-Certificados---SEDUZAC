@@ -22,7 +22,7 @@
     </div>
     {% endif %}
     <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
-        <h3>Listado de Certificados sin Firmar</h3>
+        <h3>Listado de certificados de alumnos por firmar</h3>
         <div style="overflow-x: auto;">
             <form method="post" action="">
                 {% csrf_token %}
@@ -85,7 +85,7 @@
                 <button type="submit" name="firmar_foliar" value="firmar_foliar" class="btn btn-success" style="margin-top: 30px;">Firmar y Foliar</button>
                 {% else %}
                 <tr>
-                    <td colspan="32">No se encontraron registros.</td>
+                    <td colspan="32">No se encontraron alumnos.</td>
                 </tr>
                 {% endif %}
             </form>

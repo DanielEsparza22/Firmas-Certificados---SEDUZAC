@@ -1,4 +1,5 @@
 from django import forms
+from ConfiguracionApp.models import Bachillerato
 
 # Formulario para la CURP a verificaar
 class CertificacionCForm(forms.Form):
@@ -19,11 +20,12 @@ class RegistrosCompletasForm(forms.Form):
         label="Fecha de Certificación",
         widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'})
     )
-    bachillerato = forms.CharField(
+    bachillerato = forms.ModelChoiceField(
+        queryset=Bachillerato.objects.all(),
         label="Bachillerato",
-        max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'style':'width:300px', 'placeholder':'BACHILLERATO GENERAL'}),
-        required=False,
+        widget=forms.Select(attrs={'class': 'form-control', 'style':'width:300px'}),
+        required=True,
+        empty_label="Seleccione un bachillerato"
     )
 
 # Formulario para actualizar la letra del foliador

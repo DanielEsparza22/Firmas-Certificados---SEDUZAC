@@ -4,14 +4,15 @@ import json
 from datetime import datetime
 
 
-def api_firma(rfc, documento, sistema, cadena):
+def api_firma(rfc, documento, sistema, cadena, tipo):
     url = "http://api-firma.k8.seduzac.gob.mx/sello-json"
 
     payload = json.dumps({
     "rfc": rfc, #"SAFC7105149R3",
     "documento": documento, #"certificado",
     "sistema": sistema, #"certificacion",
-    "cadena": cadena #"||1.0|3|SAFC710514MDFLLR06|Secretaria de Educación|SECRETARÍA DE EDUCACIÓN DEL ESTADO DE ZACATECAS|Secretaría de Educación del Estado de Zacatecas|32EBH0010L|000|32|FOCA070804MZSLSRA1|AURORA MARGARITA|FLORES|CASTRELLON|4|C|2024-05-07T12:00:00||"
+    "cadena": cadena, #"||1.0|3|SAFC710514MDFLLR06|Secretaria de Educación|SECRETARÍA DE EDUCACIÓN DEL ESTADO DE ZACATECAS|Secretaría de Educación del Estado de Zacatecas|32EBH0010L|000|32|FOCA070804MZSLSRA1|AURORA MARGARITA|FLORES|CASTRELLON|4|C|2024-05-07T12:00:00||"
+    "tipo": tipo #B ESTATAL, BD DISTANCIA, TB TELEBACHILLERATO
     })
     headers = {
     'Content-Type': 'application/json'

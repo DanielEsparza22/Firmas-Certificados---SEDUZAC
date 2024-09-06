@@ -1,0 +1,26 @@
+{% extends "base2.html" %}
+
+{% block title %}
+    Catalogo Bachilleratos
+{% endblock title %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Catálogo de Bachilleratos</h2>
+    </section>
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Agregar Bachillerato</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.nombre.label_tag }}
+                {{ form.nombre }}
+            </div>
+            <button class="btn btn-success" type="submit">Agregar</button>
+            <a href="{% url 'catalogo_bachilleratos' %}" class="btn btn-danger">Cancelar</a>
+        </form>
+    </section>
+</body>
+</html>
+{% endblock %}

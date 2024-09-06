@@ -5,10 +5,11 @@
         <table class="table">
             <tr>
                 <th>CURP</th>
-                <th>Apellido Paterno</th>
-                <th>Apellido Materno</th>
-                <th>Nombre</th>
-                <th>Clave CT</th>
+                <th>APELLIDO PATERNO</th>
+                <th>APELLIDO MATERNO</th>
+                <th>NOMBRE</th>
+                <th>CLAVE CT</th>
+                <th style="text-align:center;">ESTATUS DEL ALUMNO</th>
             </tr>
             <tr>
                 <td>{{ datos_alumno.curp }}</td>
@@ -16,6 +17,25 @@
                 <td>{{ datos_alumno.apm_alumno }}</td>
                 <td>{{ datos_alumno.nom_alumno }}</td>
                 <td>{{ datos_alumno.clave_ct }}</td>
+                {% if datos_alumno.alumno_estatus == "I" %}
+                <td style="text-align:center;">TERMINADO CON CERTIFICADO IMPRESO</td>
+                {% elif datos_alumno.alumno_estatus == "N" %}
+                <td style="text-align:center;">NUEVO / ALTA</td>
+                {% elif datos_alumno.alumno_estatus == "B" %}
+                <td style="text-align:center;">BAJA TEMPORAL</td>
+                {% elif datos_alumno.alumno_estatus == "D" %}
+                <td style="text-align:center;">BAJA DEFINITIVA</td>
+                {% elif datos_alumno.alumno_estatus == "R" %}
+                <td style="text-align:center;">PROMOVIDO IRREGULAR</td>
+                {% elif datos_alumno.alumno_estatus == "P" %}
+                <td style="text-align:center;">PROMOVIDO</td>
+                {% elif datos_alumno.alumno_estatus == "X" %}
+                <td style="text-align:center;">ERRONEO</td>
+                {% elif datos_alumno.alumno_estatus == "V" %}
+                <td style="text-align:center;">VERIFICADO</td>
+                {% elif datos_alumno.alumno_estatus == "W" %}
+                <td style="text-align:center;">REGISTRO ELIMINADO</td>
+                {% endif %}
             </tr>
         </table>
     </div>

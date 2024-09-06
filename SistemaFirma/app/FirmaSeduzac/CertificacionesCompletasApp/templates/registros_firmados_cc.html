@@ -11,6 +11,9 @@
     </section>
     <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
         <h3>Consultar Certificados</h3>
+        <h7>
+            Para consultar la información de los alumnos, por favor ingrese uno o varios de los siguientes filtros.
+        </h7>
         <form method="POST" action="">
             {% csrf_token %}
             <table style="margin-bottom: 10px;">
@@ -32,7 +35,7 @@
                     <th style="padding: 10px; border: 1px solid #ddd;">Fecha de Certificación</th>
                     <th style="padding: 10px; border: 1px solid #ddd;">Semestre</th>
                     <th style="padding: 10px; border: 1px solid #ddd;">Clave CT</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Certifiado</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Certificado</th>
                 </tr>
             </thead>
             <tbody>

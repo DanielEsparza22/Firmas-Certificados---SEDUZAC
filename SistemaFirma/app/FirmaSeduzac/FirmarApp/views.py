@@ -30,6 +30,7 @@ def obtener_valores_cadena(cursor, curp):
     documento = "certificado"
     sistema = "certificacion"
     cadena = ""
+    tipo = ""
 
     query = (
         "SELECT a.curp, a.nom_alumno, a.app_alumno, a.apm_alumno, a.promedio, s.clave_ct FROM alumnos a "
@@ -54,7 +55,12 @@ def obtener_valores_cadena(cursor, curp):
 
     cadena = f"||1.0|3|SAFC710514MDFLLR06|Secretaria de Educación|SECRETARÍA DE EDUCACIÓN DEL ESTADO DE ZACATECAS|Secretaría de Educación del Estado de Zacatecas|{clavecct}|000|32|{curp_alumno}|{nombre}|{ap_paterno}|{ap_materno}|3|{promedio}|{fecha_final}||"
     # print(cadena)
-    firma = api_firma(rfc, documento, sistema, cadena)
+
+
+
+
+    # Antes de esta linea obtener el tipo de bachillerato
+    firma = api_firma(rfc, documento, sistema, cadena, tipo)
     respuesta_json = json.loads(firma)
     sello = respuesta_json["sello"]
     uuid = respuesta_json["uuid"]
@@ -151,7 +157,7 @@ def foliar_certificado_prepas_cp(cursor, clavecct, curp, nombre_ct):
     clave = clavecct[2:5]
     foliador = None
     if((clave == 'EBH' or clave == 'PBH') and nombre_ct != 'BACHILLERATO A DISTANCIA'):
-        foliador = foliador_prepa
+        foliador = foliador_prepa # --> B
     elif(clave == 'ETK'):
         foliador = LETRA_FOLIO_TB
     elif(clave == 'EBH' and nombre_ct == 'BACHILLERATO A DISTANCIA'):
@@ -209,7 +215,7 @@ def firmar(request):
                     # Encontrar el registro correspondiente en la lista de registros
                     registro = next((reg for reg in registros if (reg[1] == registro_curp)), None)
 
-                    source = registro[-1] # El último valor en la tupla es el source o de que tabla viene
+                    source = registro[-1] # El ultimo valor en la tupla es el source o de que tabla viene
                     if(source == 'alumno_certificado'):
                         print("Alumno Total")
                         valores_cadena = obtener_valores_cadena(cursor, registro_curp)
@@ -226,7 +232,7 @@ def firmar(request):
                         clavecct = obtener_clave_cct_cp(cursor,registro_curp)
                         foliar_certificado_prepas_cp(cursor, clavecct, registro_curp, nombre_ct)
                         
-                messages.success(request, f'Se firmaron y foliaron {num_registros} registros exitosamente')
+                messages.success(request, f'Se firmaron y foliaron {num_registros} certificados exitosamente')
                 return redirect('firmar')
 
     return render(request,'firmar_foliar.html',{'registros':registros})

@@ -110,7 +110,7 @@
               <li class="nav-item">
                 <a href="{% url 'consultar_registros_cc' %}" class="nav-link {% if request.path == '/certificados_completos/consultar_registros_cc/' %}active{% endif %}">
                   <i class="bi bi-search"></i>
-                  <p style="margin-left:10px">Consultar Registros</p>
+                  <p style="margin-left:10px">Consultar Certificados</p>
                 </a>
               </li>
             </ul>
@@ -135,7 +135,7 @@
               <li class="nav-item">
                 <a href="{% url 'consultar_registros_cp' %}" class="nav-link {% if request.path == '/certificados_parciales/consultar_registros_cp/' %}active{% endif %}">
                   <i class="bi bi-search"></i>
-                  <p style="margin-left:10px">Consultar Registros</p>
+                  <p style="margin-left:10px">Consultar Certificados</p>
                 </a>
               </li>
             </ul>
@@ -172,6 +172,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{% url 'cancelar_certificado' %}" class="nav-link {% if '/cancelar_certificados/' in request.path %}active{% endif %}">
+              <i class="bi bi-file-earmark-x"></i>
+              <p style="margin-left:10px">
+                Cancelar Certificados
+              </p>
+            </a>
+          </li>
           {% if user.is_superuser %}
           <li class="nav-item">
             <a href="#" class="nav-link {% if '/configuracion/' in request.path %}active{% endif %}">
@@ -194,6 +202,14 @@
                 <a href="{% url 'actualizar_autoridad' %}" class="nav-link {% if request.path == '/configuracion/actualizar_autoridad/' %}active{% endif %}">
                   <i class="bi bi-book"></i>
                   <p style="margin-left:10px">Actualizar Autoridad Educativa</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'catalogo_bachilleratos' %}" class="nav-link {% if request.path == '/configuracion/catalogo_bachilleratos/' %}active{% endif %}">
+                  <i class="bi bi-journal-bookmark"></i>
+                  <p style="margin-left:10px">Catalogo de Bachilleratos</p>
                 </a>
               </li>
             </ul>

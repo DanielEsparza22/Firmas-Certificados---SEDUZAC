@@ -1,0 +1,117 @@
+{% extends "base2.html" %}
+
+{% block titulo %}
+    Cancelar Certificados
+{% endblock titulo %}
+
+{% block content %}
+<section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+    <h2>Cancelar Certificados</h2>
+</section>
+<section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+    {% if seccion_cancelar %}
+    <h3>Buscar certificado a cancelar</h3>
+    <form method="post" style="width: 100%;">
+        {% csrf_token %}
+        <div style="display: flex; align-items: center;">
+            <div>
+                <label for="id_curp">Ingrese la CURP del alumno:</label>
+                {{ form_cancel.curp }}
+            </div>
+            <button type="submit" name="buscar_curp" value="buscar_curp" class="btn btn-success" style="margin-left: 10px; margin-top: 30px">Buscar</button>
+        </div>
+    {% if registros %}
+    {% if mensaje_estatus %}
+        <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ mensaje_estatus }}</p>
+    {% endif %}
+    <h5>CERTIFICADO</h5>
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CURP</th>
+                    <th>Folio SEP</th>
+                    <th>Clave CT</th>
+                    <th>Primer Apellido</th>
+                    <th>Segundo Apellido</th>
+                    <th>Nombre</th>
+                    <th>Estatus</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.1 }}</td>
+                    <td>{{ registro.7|default:"Sin Folio" }}</td>
+                    <td>{{ registro.5 }}</td>
+                    <td>{{ registro.2 }}</td>
+                    <td>{{ registro.3 }}</td>
+                    <td>{{ registro.4 }}</td>
+                    {% if registro.6 == 0 %}
+                    <td>Por firmar</td>
+                    {% elif registro.6 == 1 %}
+                    <td>Firmado</td>
+                    {% elif registro.6 == 2 %}
+                    <td>Firmado SEP</td>
+                    {% elif registro.6 == 3 %}
+                    <td>Cancelado</td>
+                    {% elif registro.6 == 4 %}
+                    <td>Impreso</td>
+                    {% elif registro.6 == 5 %}
+                    <td>Para cancelar</td>
+                    {% elif registro.6 == 103 %}
+                    <td>Validada</td>
+                    {% elif registro.6 == 100 %}
+                    <td>Inicial Feria de servicios</td>
+                    {% elif registro.6 == 101 %}
+                    <td>Procesando</td>
+                    {% elif registro.6 == 102 %}
+                    <td>No se encontró información</td>
+                    {% endif %}
+                    <td>{{ registro.8|default:"Sin observaciones" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if btn_cancelar == True %}
+        <div style="display: flex; align-items: center;">
+            <div>
+                <label for="observ_curp">Escriba las observaciones:</label>
+                {{ form_cancel.observaciones }}
+            </div>
+        </div>
+        <button type="button" class="btn btn-danger" style="margin-left: 10px; margin-top: 30px" data-bs-toggle="modal" data-bs-target="#cancelarModal">
+            Cancelar certificado
+        </button>
+    {% endif %}
+        <div class="modal fade" id="cancelarModal" tabindex="-1" aria-labelledby="cancelarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="cancelarModalLabel">Confirmar cancelación</h1>
+                </div>
+                <div class="modal-body">
+                ¿Está seguro(a) que desea cancelar el certificado?
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Regresar</button>
+                <button type="submit" name="cancelar_cert" value="cancelar_cert" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </form>
+    {% elif mensaje_registros %}
+        <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ mensaje_registros }}</p>
+    {% endif %}
+    {% endif %}
+    {% if cancelado %}
+        <p class="alert alert-success" style="width:25%; margin-top:10px">{{ cancelado }}</p>
+        <div style="margin-top: 10px; font-size: 1em; max-width: 35%; width: 100%;">
+            <b>Si desea cancelar otro certificado, haga clic <a href="{% url 'cancelar_certificado' %}">aquí</a>.</b>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

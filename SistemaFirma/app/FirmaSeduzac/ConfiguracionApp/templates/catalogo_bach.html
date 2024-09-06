@@ -1,0 +1,38 @@
+{% extends "base2.html" %}
+
+{% block title %}
+    Catalogo Bachilleratos
+{% endblock title %}
+
+{% block content %}
+<body>
+    <section style="border: 5px solid #ccc; padding: 10px; background-color: #DCDCDC; margin-bottom: 20px; text-align:center;">
+        <h2>Catálogo de Bachilleratos</h2>
+    </section>
+    <section style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; margin-bottom: 20px;">
+        <h3>Lista de Bachilleratos</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bachillerato in bachilleratos %}
+                <tr>
+                    <td>{{ bachillerato.nombre }}</td>
+                    <td>
+                        <a href="{% url 'eliminar_bachillerato' bachillerato.id %}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+                        <a href="{% url 'editar_bachillerato' bachillerato.id %}" class="btn btn-outline-info btn-sm">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <a href="{% url 'agregar_bachillerato' %}" class="btn btn-outline-primary">Agregar bachillerato</a>
+    </section>
+</body>
+</html>
+{% endblock %}

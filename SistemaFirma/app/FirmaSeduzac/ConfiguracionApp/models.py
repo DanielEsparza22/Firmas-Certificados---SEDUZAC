@@ -26,3 +26,9 @@ class AutoridadEducativa(models.Model):
         validators=[validate_certificado_autoridad],
         default="00000000000000008682"
     )
+
+class Bachillerato(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre

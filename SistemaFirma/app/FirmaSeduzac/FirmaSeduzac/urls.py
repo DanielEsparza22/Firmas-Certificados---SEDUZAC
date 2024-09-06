@@ -28,6 +28,7 @@ urlpatterns = [
     path('configuracion/', include('ConfiguracionApp.urls')),
     path('firmar/', include('FirmarApp.urls')),
     path('certificados_historicos/', include('HistoricasApp.urls')),
+    path('cancelar_certificados/', include('CancelarCertApp.urls'))
 ]
 
 handler403 = 'ConfiguracionApp.views.error_403'

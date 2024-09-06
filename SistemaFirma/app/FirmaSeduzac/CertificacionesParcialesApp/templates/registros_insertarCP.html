@@ -4,11 +4,11 @@
         {% csrf_token %}
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <div style="flex: 1; margin-right: 10px;">
-                <label>Fecha de Certificación</label>
+                <label>Seleccione la fecha de certificación:</label>
                 {{ form_registros.fecha_certificacion }}
             </div>
             <div style="flex: 1; margin-right: -75px;">
-                <label>Bachillerato</label>
+                <label>Ingrese el bachillerato:</label>
                 {{ form_registros.bachillerato }}
             </div>
             <div style="flex: 1; margin-right: 10px;">
@@ -17,11 +17,29 @@
             </div>
         </div>
         {% if boton_enviar %}
-        <button type="submit" name="obtener_registros" value="obtener_registros" class="btn btn-success" style="margin-top: 30px;">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#guardarModal">
             <i class="bi bi-floppy"></i>
-            Guardar Datos
+            Guardar Alumno
         </button>
         {% endif %}
+        <!-- Modal -->
+        <div class="modal fade" id="guardarModal" tabindex="-1" aria-labelledby="guardarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="guardarModalLabel">Confirmar datos</h1>
+                </div>
+                <div class="modal-body">
+                ¿Está seguro(a) de que los datos del alumno a guardar son correctos?
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Regresar</button>
+                <button type="submit" name="obtener_registros" value="obtener_registros" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+            </div>
+        </div>
     </form>
     {% if error_registros_insertar %}
     <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ error_registros_insertar }}</p>

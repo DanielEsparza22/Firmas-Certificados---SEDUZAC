@@ -223,6 +223,7 @@ def certificaciones_parciales(request):
     datos_alumno = None
     seccion_datos = None
     seccion_guardar = None
+    seccion_verificar = True
 
     if(request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
@@ -233,21 +234,21 @@ def certificaciones_parciales(request):
                 datos_alumno = obtener_datos_alumno(cursor, curp)
 
                 if(not alumno_info):
-                    error = "No se encontró el certificado"
+                    error = "Este alumno no cuenta con certificado."
                     seccion_datos = True
                     seccion_guardar = True
                 else:
                     seccion_datos = False
                     seccion_guardar = False
                 if(not clave_info):
-                    error_clave = "No se encontró la clave del alumno"
+                    error_clave = "No se encontró la clave del alumno."
 
             if(form_registros.is_valid()):
                 curp = request.session.get('curp', None) #Recupero la curp de la sesion
                 clave = obtener_clave_alumno(cursor,curp)
                 fecha_cert = form_registros.cleaned_data['fecha_certificacion']
                 fecha_certificacion = form_registros.cleaned_data['fecha_certificacion']
-                bachillerato = form_registros.cleaned_data['bachillerato'].upper() or "BACHILLERATO GENERAL"
+                bachillerato = form_registros.cleaned_data['bachillerato']
                 semestre = form_registros.cleaned_data['semestre']
                 autoridad = AutoridadEducativa.objects.latest('id')
                 nombre_autoridad = autoridad.nombre_autoridad
@@ -258,10 +259,11 @@ def certificaciones_parciales(request):
                     if resultados:
                         registros_insertar = resultados
                         insertar_registros(cursor, resultados)
-                        mensaje_insercion = "Datos guardados correctamente."
+                        mensaje_insercion = "Los datos del alumno se guardaron con éxito."
                         boton_enviar_datos = False
+                        seccion_verificar = False
                     else:
-                        error_registros_insertar = "No se encontraron registros para insertar."
+                        error_registros_insertar = "Error al guardar los datos del alumno. Verifique la información."
                 # elif('firmar' in request.POST):
                 #     curp = request.session.get('curp', None) #Recupero la curp de la sesion
                 #     if(curp):
@@ -294,6 +296,7 @@ def certificaciones_parciales(request):
         'datos_alumno':datos_alumno,
         'seccion_guardar':seccion_guardar,
         'seccion_datos':seccion_datos,
+        'seccion_verificar':seccion_verificar,
     })
 
 # def reiniciar_foliador_cp(request):

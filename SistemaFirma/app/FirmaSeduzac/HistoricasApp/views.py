@@ -181,6 +181,8 @@ def certificaciones_historicas(request):
     fecha_certificacion = None
     mensaje_firma = None
     error_clave = None
+    mensaje_firmado = None
+    mensaje_no_firmado = None
 
     if (request.method == "POST"):
         with connections['mariadb'].cursor() as cursor:
@@ -193,14 +195,16 @@ def certificaciones_historicas(request):
                 estatus = obtener_estatus_certificado(cursor,curp)
 
                 if (not alumno_info):
-                    error = "No se encontró el certificado"
+                    error = "Este alumno no cuenta con certificado"
                     seccion_datos = True
                     boton_firmar = False
                 else:
                     if(estatus in (103,1,2,4)):
                         boton_firmar = False
+                        mensaje_firmado = "Este alumno ya cuenta con un certificado firmado."
                     else:
                         boton_firmar = True
+                        mensaje_no_firmado = "Este alumno aún no cuenta con certificado firmado. Presione el botón de 'Firmar' si desea firmar el certificado."
                         if('firmar' in request.POST):
                             clave = obtener_clave_cct(cursor, curp)
                             if(clave == " " or clave is None or clave == ""):
@@ -219,4 +223,6 @@ def certificaciones_historicas(request):
                                             'boton_firmar':boton_firmar,
                                             'seccion_datos':seccion_datos,
                                             'mensaje_firma':mensaje_firma,
-                                            'error_clave':error_clave})
+                                            'error_clave':error_clave,
+                                            'mensaje_firmado':mensaje_firmado,
+                                            'mensaje_no_firmado':mensaje_no_firmado})

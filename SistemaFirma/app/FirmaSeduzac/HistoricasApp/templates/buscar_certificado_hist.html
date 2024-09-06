@@ -118,4 +118,10 @@
     {% if error_clave %}
         <p class="alert alert-danger" style="width:25%; margin-top:10px">{{ error_clave }}</p>
     {% endif %}
+    {% if mensaje_firmado %}
+        <p class="alert alert-success" style="width:25%; margin-top:10px">{{ mensaje_firmado }}</p>
+    {% endif %}
+    {% if mensaje_no_firmado %}
+        <p class="alert alert-warning" style="width:25%; margin-top:10px">{{ mensaje_no_firmado }}</p>
+    {% endif %}
 </section>
